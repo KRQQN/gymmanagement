@@ -74,12 +74,12 @@ export default function ClassesPage() {
         {classes.map((cls) => (
           <div
             key={cls.id}
-            className="rounded-lg border bg-card p-6"
+            className="flex flex-col rounded-lg border bg-card p-6"
           >
-            <div className="space-y-4">
+            <div className="flex-1 space-y-4">
               <div>
                 <h2 className="text-xl font-semibold">{cls.name}</h2>
-                <p className="mt-2 text-muted-foreground">
+                <p className="mt-2 text-sm text-muted-foreground">
                   {cls.description}
                 </p>
                 <div className="mt-4 flex items-center justify-between">
@@ -93,7 +93,7 @@ export default function ClassesPage() {
               </div>
 
               <div>
-                <h3 className="font-medium mb-2">Schedule</h3>
+                <h3 className="text-sm font-medium mb-2">Schedule</h3>
                 <ul className="space-y-1">
                   {cls.schedule.map((slot, index) => (
                     <li key={index} className="text-sm text-muted-foreground">
@@ -104,7 +104,7 @@ export default function ClassesPage() {
               </div>
 
               <div>
-                <h3 className="font-medium mb-2">Equipment Needed</h3>
+                <h3 className="text-sm font-medium mb-2">Equipment Needed</h3>
                 <ul className="space-y-1">
                   {cls.equipment.map((item, index) => (
                     <li key={index} className="text-sm text-muted-foreground">
@@ -115,7 +115,7 @@ export default function ClassesPage() {
               </div>
 
               <div>
-                <h3 className="font-medium mb-2">Requirements</h3>
+                <h3 className="text-sm font-medium mb-2">Requirements</h3>
                 <ul className="space-y-1">
                   {cls.requirements.map((req, index) => (
                     <li key={index} className="text-sm text-muted-foreground">
@@ -130,19 +130,19 @@ export default function ClassesPage() {
                   Instructor: {cls.instructor.name}
                 </p>
               </div>
-
-              <Button
-                className="w-full"
-                onClick={() => {
-                  toast({
-                    title: "Coming Soon",
-                    description: "Class booking feature will be available soon!",
-                  });
-                }}
-              >
-                Book Class
-              </Button>
             </div>
+
+            <Button
+              className="w-full mt-6"
+              onClick={() => {
+                toast({
+                  title: "Coming Soon",
+                  description: "Class booking feature will be available soon!",
+                });
+              }}
+            >
+              Book Class
+            </Button>
           </div>
         ))}
       </div>
