@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
-import { MembershipType, MembershipStatus, PaymentStatus, PaymentMethod } from "@prisma/client";
+import { MembershipType, MembershipStatus } from "@prisma/client";
 
 export async function POST(req: Request) {
   try {
@@ -38,63 +38,57 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if user already has an active membership
+    // Map plan ID to membership type
+    const membershipType = planId.toUpperCase() as MembershipType;
+
+    // Check if user already has a membership
     const existingMembership = await prisma.membership.findFirst({
       where: {
         userId: session.user.id,
-        status: MembershipStatus.ACTIVE,
-        endDate: {
-          gte: new Date(),
-        },
       },
     });
 
-    if (existingMembership) {
-      return NextResponse.json(
-        { message: "You already have an active membership" },
-        { status: 400 }
-      );
-    }
-
-    // Create new membership
     const startDate = new Date();
     const endDate = new Date();
     endDate.setMonth(endDate.getMonth() + 1); // 1 month membership
 
-    const membership = await prisma.membership.create({
-      data: {
-        userId: session.user.id,
-        type: MembershipType.BASIC,
-        startDate,
-        endDate,
-        status: MembershipStatus.ACTIVE,
-        price: plan.price,
-      },
-    });
-
-    // Create payment record
-    await prisma.payment.create({
-      data: {
-        userId: session.user.id,
-        amount: plan.price,
-        status: PaymentStatus.COMPLETED,
-        paymentMethod: PaymentMethod.ONLINE,
-      },
-    });
+    let membership;
+    if (existingMembership) {
+      // Update existing membership
+      membership = await prisma.membership.update({
+        where: {
+          id: existingMembership.id,
+        },
+        data: {
+          type: membershipType,
+          status: MembershipStatus.ACTIVE,
+          startDate,
+          endDate,
+          price: plan.price,
+        },
+      });
+    } else {
+      // Create new membership
+      membership = await prisma.membership.create({
+        data: {
+          userId: session.user.id,
+          type: membershipType,
+          status: MembershipStatus.ACTIVE,
+          startDate,
+          endDate,
+          price: plan.price,
+        },
+      });
+    }
 
     return NextResponse.json({
-      message: "Successfully subscribed to membership plan",
-      membership: {
-        id: membership.id,
-        startDate: membership.startDate,
-        endDate: membership.endDate,
-        status: membership.status,
-      },
+      message: "Subscription successful",
+      membership,
     });
   } catch (error) {
-    console.error("Error subscribing to plan:", error);
+    console.error("Error subscribing:", error);
     return NextResponse.json(
-      { message: "Error subscribing to plan" },
+      { message: "Error subscribing to membership" },
       { status: 500 }
     );
   }
