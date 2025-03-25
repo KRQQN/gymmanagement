@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useSession, signOut, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -59,6 +59,16 @@ export default function Profile() {
         title: "Success",
         description: "Your profile has been updated successfully",
       });
+
+      // Force a session refresh by signing out and signing back in
+      await signOut({ redirect: false });
+      await signIn("credentials", {
+        email: email,
+        password: newPassword || currentPassword,
+        redirect: false,
+      });
+
+      router.refresh();
     } catch (error) {
       toast({
         title: "Error",
