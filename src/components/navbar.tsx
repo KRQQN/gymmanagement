@@ -17,23 +17,27 @@ export function Navbar() {
   const { data: session } = useSession();
 
   return (
-    <nav className="border-b">
+    <nav className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-16 items-center px-4 container mx-auto">
-        <Link href="/" className="font-bold text-xl">
+        <Link href="/" className="font-bold text-xl text-white">
           &lt;your gym&gt;
         </Link>
         <div className="ml-auto flex items-center space-x-4">
           <Link href="/classes">
-            <Button variant="ghost">Classes</Button>
+            <Button variant="ghost" className="text-gray-200 hover:text-white hover:bg-secondary">
+              Classes
+            </Button>
           </Link>
           <Link href="/membership">
-            <Button variant="ghost">Membership</Button>
+            <Button variant="ghost" className="text-gray-200 hover:text-white hover:bg-secondary">
+              Membership
+            </Button>
           </Link>
           {session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <UserCircle className="h-6 w-6" />
+                  <UserCircle className="h-6 w-6 text-gray-200" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -49,19 +53,19 @@ export function Navbar() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <Link href="/dashboard">
-                  <DropdownMenuItem>Dashboard</DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">Dashboard</DropdownMenuItem>
                 </Link>
                 <Link href="/profile">
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
                 </Link>
                 {session.user?.role === "ADMIN" && (
                   <Link href="/admin">
-                    <DropdownMenuItem>Admin Panel</DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer">Admin Panel</DropdownMenuItem>
                   </Link>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  className="text-red-600"
+                  className="text-red-500 cursor-pointer"
                   onClick={() => signOut()}
                 >
                   Log out
@@ -71,10 +75,14 @@ export function Navbar() {
           ) : (
             <div className="space-x-2">
               <Link href="/auth/signin">
-                <Button variant="ghost">Sign In</Button>
+                <Button variant="ghost" className="text-gray-200 hover:text-white hover:bg-secondary">
+                  Sign In
+                </Button>
               </Link>
               <Link href="/auth/signup">
-                <Button>Sign Up</Button>
+                <Button className="bg-primary hover:bg-primary-hover text-white">
+                  Sign Up
+                </Button>
               </Link>
             </div>
           )}

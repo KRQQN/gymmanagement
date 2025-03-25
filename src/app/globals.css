@@ -4,33 +4,37 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
     
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 3%;
+    --card-foreground: 0 0% 100%;
     
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 3%;
+    --popover-foreground: 0 0% 100%;
     
-    --primary: 271 91% 65%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 0 84% 45%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 0 84% 40%;
+    --primary-light: 0 84% 50%;
     
-    --secondary: 240 5.9% 10%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-hover: 0 0% 15%;
     
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 70%;
     
-    --accent: 273 91% 65%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 0 84% 45%;
+    --accent-foreground: 0 0% 100%;
     
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-hover: 0 84% 40%;
     
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 271 91% 65%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 0 84% 45%;
     
     --radius: 0.5rem;
   }
@@ -38,46 +42,66 @@
   * {
     @apply border-border;
   }
+  
   body {
-    @apply bg-[#0a0a0a] text-white;
+    @apply relative min-h-screen bg-background text-foreground;
+  }
+
+  ::selection {
+    @apply bg-primary/40 text-white;
   }
 }
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 shadow-inner-light relative z-10;
   }
   
   .btn-primary {
-    @apply bg-primary text-white shadow hover:bg-primary-hover;
+    @apply bg-gradient-to-br from-primary/90 via-primary to-primary/90 text-white shadow-depth hover:shadow-glow hover:scale-[1.02] active:scale-[0.98] hover:-translate-y-1 hover:bg-primary-hover;
   }
   
   .btn-secondary {
-    @apply bg-secondary text-white shadow-sm hover:bg-secondary-hover;
+    @apply bg-secondary text-white shadow-depth hover:shadow-glow hover:scale-[1.02] active:scale-[0.98] hover:-translate-y-1 hover:bg-secondary-hover;
   }
   
   .btn-destructive {
-    @apply bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90;
+    @apply bg-gradient-to-br from-destructive to-destructive-hover text-destructive-foreground shadow-depth hover:opacity-90 hover:-translate-y-1;
   }
   
   .btn-outline {
-    @apply border border-border bg-transparent text-white shadow-sm hover:bg-secondary;
+    @apply border border-white/10 bg-transparent text-white shadow-inner-light backdrop-blur-sm hover:bg-white/5 hover:border-primary/30 hover:shadow-depth hover:-translate-y-1;
   }
   
   .btn-ghost {
-    @apply text-white hover:bg-secondary;
+    @apply text-white hover:bg-white/5 hover:shadow-inner-light hover:-translate-y-1;
   }
   
   .btn-link {
-    @apply text-primary underline-offset-4 hover:underline;
+    @apply text-primary underline-offset-4 hover:text-primary-light hover:underline;
   }
   
   .input {
-    @apply flex h-9 w-full rounded-md border border-border bg-secondary px-3 py-1 text-sm text-white shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50;
+    @apply flex h-10 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white shadow-inner-light backdrop-blur-sm transition-all duration-300 relative z-10
+    file:border-0 file:bg-transparent file:text-sm file:font-medium 
+    placeholder:text-muted-foreground
+    focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary/30
+    disabled:cursor-not-allowed disabled:opacity-50
+    hover:border-primary/20 hover:shadow-depth hover:-translate-y-1;
   }
   
   .card {
-    @apply rounded-lg border border-border bg-secondary shadow-sm;
+    @apply rounded-lg border border-white/10 bg-white/5 backdrop-blur-md shadow-lg relative z-10
+    hover:shadow-glow hover:border-primary/20 transition-all duration-300 hover:-translate-y-2;
+    box-shadow: 
+      0 0 40px rgba(255, 255, 255, 0.03),
+      inset 0 0 20px rgba(255, 255, 255, 0.02);
+  }
+  
+  .card:hover {
+    box-shadow: 
+      0 0 60px rgba(255, 255, 255, 0.05),
+      inset 0 0 30px rgba(255, 255, 255, 0.03);
   }
   
   .card-header {
@@ -89,7 +113,7 @@
   }
   
   .card-description {
-    @apply text-sm text-gray-400;
+    @apply text-sm text-muted-foreground;
   }
   
   .card-content {
@@ -98,5 +122,69 @@
   
   .card-footer {
     @apply flex items-center p-6 pt-0;
+  }
+
+  .glass-effect {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-inner-light relative z-10;
+  }
+
+  .gradient-border {
+    @apply border border-transparent bg-gradient-to-br from-primary/30 to-accent/30 bg-clip-border relative z-10;
+  }
+
+  .content-wrapper {
+    @apply relative z-10 p-8 mt-4;
+  }
+
+  .content-wrapper > div {
+    @apply relative z-10 p-6 mb-6;
+  }
+
+  .section {
+    @apply relative z-10 bg-white/5 backdrop-blur-md border border-white/5 rounded-2xl shadow-lg p-6 mb-6;
+    box-shadow: 
+      0 0 40px rgba(255, 255, 255, 0.03),
+      inset 0 0 20px rgba(255, 255, 255, 0.02);
+  }
+
+  .section:hover {
+    box-shadow: 
+      0 0 60px rgba(255, 255, 255, 0.05),
+      inset 0 0 30px rgba(255, 255, 255, 0.03);
+  }
+
+  .nav-link {
+    @apply text-gray-100 hover:text-white transition-colors duration-200;
+  }
+
+  .nav-link-active {
+    @apply text-white font-medium;
+  }
+
+  .nav-container {
+    @apply bg-black/80 backdrop-blur-md border-b border-white/5 shadow-depth;
+  }
+
+  .hero-section {
+    @apply relative overflow-hidden rounded-2xl shadow-depth-lg;
+  }
+
+  .feature-card {
+    @apply relative overflow-hidden rounded-xl shadow-depth hover:shadow-glow hover:-translate-y-2;
+  }
+
+  .cta-section {
+    @apply relative overflow-hidden rounded-2xl shadow-depth-lg;
+  }
+
+  .background-base {
+    @apply fixed inset-0 bg-gradient-to-br from-gray-800/30 via-slate-500/40 to-gray-800/30 z-0;
+  }
+
+  .dot-pattern {
+    @apply fixed inset-0 z-0;
+    background-image: radial-gradient(rgba(255,255,255,0.15) 2px, transparent 1px);
+    background-size: 34px 34px;
+    opacity: 0.35;
   }
 }
