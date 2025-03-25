@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
+import { MembershipType, MembershipStatus, PaymentStatus, PaymentMethod } from "@prisma/client";
 
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.email) {
+    if (!session?.user?.id) {
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
@@ -15,6 +16,13 @@ export async function POST(req: Request) {
     }
 
     const { planId } = await req.json();
+
+    if (!planId) {
+      return NextResponse.json(
+        { message: "Plan ID is required" },
+        { status: 400 }
+      );
+    }
 
     // Get the selected plan
     const plan = await prisma.membershipPlan.findUnique({
@@ -34,7 +42,7 @@ export async function POST(req: Request) {
     const existingMembership = await prisma.membership.findFirst({
       where: {
         userId: session.user.id,
-        status: "ACTIVE",
+        status: MembershipStatus.ACTIVE,
         endDate: {
           gte: new Date(),
         },
@@ -56,10 +64,11 @@ export async function POST(req: Request) {
     const membership = await prisma.membership.create({
       data: {
         userId: session.user.id,
-        planId: plan.id,
+        type: MembershipType.BASIC,
         startDate,
         endDate,
-        status: "ACTIVE",
+        status: MembershipStatus.ACTIVE,
+        price: plan.price,
       },
     });
 
@@ -67,10 +76,9 @@ export async function POST(req: Request) {
     await prisma.payment.create({
       data: {
         userId: session.user.id,
-        membershipId: membership.id,
         amount: plan.price,
-        status: "COMPLETED",
-        description: `Monthly membership for ${plan.name}`,
+        status: PaymentStatus.COMPLETED,
+        paymentMethod: PaymentMethod.ONLINE,
       },
     });
 

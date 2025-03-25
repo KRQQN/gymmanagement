@@ -51,6 +51,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   membership    Membership?
+  classes       GymClass[]
   checkIns      CheckIn[]
   payments      Payment[]
   createdAt     DateTime  @default(now())
@@ -143,4 +144,24 @@ enum PaymentMethod {
   DEBIT_CARD
   BANK_TRANSFER
   ONLINE
+}
+
+model GymClass {
+  id            String   @id @default(cuid())
+  name          String
+  description   String
+  schedule      Json
+  duration      Int
+  capacity      Int
+  bookedSpots   Int      @default(0)
+  category      String?
+  difficulty    String?
+  equipment     String[]
+  requirements  String[]
+  instructorId  String
+  instructor    User     @relation(fields: [instructorId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([instructorId])
 }

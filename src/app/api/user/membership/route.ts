@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
+import { MembershipStatus } from "@prisma/client";
 
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.email) {
+    if (!session?.user?.id) {
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
@@ -18,13 +19,10 @@ export async function GET() {
     const membership = await prisma.membership.findFirst({
       where: {
         userId: session.user.id,
-        status: "ACTIVE",
+        status: MembershipStatus.ACTIVE,
         endDate: {
           gte: new Date(),
         },
-      },
-      include: {
-        plan: true,
       },
     });
 
@@ -38,11 +36,11 @@ export async function GET() {
     return NextResponse.json({
       membership: {
         id: membership.id,
-        type: membership.plan.name,
+        type: membership.type,
         startDate: membership.startDate,
         endDate: membership.endDate,
         status: membership.status,
-        price: membership.plan.price,
+        price: membership.price,
       },
     });
   } catch (error) {
