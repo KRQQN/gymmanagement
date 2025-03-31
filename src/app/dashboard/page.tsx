@@ -37,7 +37,7 @@ export default function Dashboard() {
         <div className="rounded-lg border bg-card p-6">
           <h2 className="mb-2 text-xl font-semibold">Membership Status</h2>
           <p className="text-muted-foreground">Active</p>
-          <Button className="mt-4" variant="outline" asChild>
+          <Button className="mt-4" variant="default" asChild>
             <Link href="/dashboard/membership">View Details</Link>
           </Button>
         </div>
@@ -45,7 +45,7 @@ export default function Dashboard() {
         <div className="rounded-lg border bg-card p-6">
           <h2 className="mb-2 text-xl font-semibold">Recent Check-ins</h2>
           <p className="text-muted-foreground">No recent check-ins</p>
-          <Button className="mt-4" variant="outline" asChild>
+          <Button className="mt-4" variant="default" asChild>
             <Link href="/dashboard/check-ins">View History</Link>
           </Button>
         </div>
@@ -53,7 +53,7 @@ export default function Dashboard() {
         <div className="rounded-lg border bg-card p-6">
           <h2 className="mb-2 text-xl font-semibold">Payment History</h2>
           <p className="text-muted-foreground">No recent payments</p>
-          <Button className="mt-4" variant="outline" asChild>
+          <Button className="mt-4" variant="default" asChild>
             <Link href="/dashboard/payments">View Payments</Link>
           </Button>
         </div>
@@ -61,7 +61,7 @@ export default function Dashboard() {
         <div className="rounded-lg border bg-card p-6">
           <h2 className="mb-2 text-xl font-semibold">Profile Settings</h2>
           <p className="text-muted-foreground">Manage your account</p>
-          <Button className="mt-4" variant="outline" asChild>
+          <Button className="mt-4" variant="default" asChild>
             <Link href="/dashboard/profile">Edit Profile</Link>
           </Button>
         </div>
@@ -70,7 +70,7 @@ export default function Dashboard() {
           <div className="rounded-lg border bg-card p-6">
             <h2 className="mb-2 text-xl font-semibold">Admin Panel</h2>
             <p className="text-muted-foreground">Manage gym operations</p>
-            <Button className="mt-4" variant="outline" asChild>
+            <Button className="mt-4" variant="default" asChild>
               <Link href="/admin">Go to Admin Panel</Link>
             </Button>
           </div>

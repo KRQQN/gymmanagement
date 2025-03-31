@@ -35,24 +35,15 @@ export async function GET() {
         name: true,
         email: true,
         role: true,
-        memberships: {
-          where: {
-            status: "ACTIVE",
-            endDate: {
-              gte: new Date(),
-            },
-          },
+        membership: {
           select: {
-            plan: {
-              select: {
-                name: true,
-              },
-            },
+            id: true,
             status: true,
+            type: true,
+            startDate: true,
             endDate: true,
-          },
-          take: 1,
-        },
+          }
+        }
       },
       orderBy: {
         createdAt: "desc",
@@ -65,11 +56,11 @@ export async function GET() {
         name: member.name,
         email: member.email,
         role: member.role,
-        membership: member.memberships[0]
+        membership: member.membership
           ? {
-              type: member.memberships[0].plan.name,
-              status: member.memberships[0].status,
-              endDate: member.memberships[0].endDate,
+              type: member.membership.type,
+              status: member.membership.status,
+              endDate: member.membership.endDate,
             }
           : null,
       })),

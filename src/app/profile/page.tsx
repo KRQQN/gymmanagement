@@ -68,7 +68,6 @@ export default function ProfilePage() {
             <h2 className="text-xl font-semibold mb-4">Account Settings</h2>
             <div className="space-y-4">
               <Button
-                variant="outline"
                 className="w-full justify-start"
                 onClick={() => {
                   toast({
@@ -81,7 +80,6 @@ export default function ProfilePage() {
                 Change Password
               </Button>
               <Button
-                variant="outline"
                 className="w-full justify-start"
                 onClick={() => {
                   toast({

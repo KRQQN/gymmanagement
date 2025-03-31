@@ -9,7 +9,9 @@
     "lint": "next lint",
     "db:seed": "ts-node --transpile-only prisma/seed.ts",
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate deploy"
+    "db:migrate": "prisma migrate deploy",
+    "create-admin": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/scripts/create-admin.ts",
+    "create-test-accounts": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/scripts/create-test-accounts.ts"
   },
   "prisma": {
     "seed": "ts-node --transpile-only prisma/seed.ts"

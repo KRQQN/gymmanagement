@@ -7,10 +7,10 @@
     --background: 0 0% 0%;
     --foreground: 0 0% 100%;
     
-    --card: 0 0% 3%;
+    --card: 0 0% 2%;
     --card-foreground: 0 0% 100%;
     
-    --popover: 0 0% 3%;
+    --popover: 0 0% 2%;
     --popover-foreground: 0 0% 100%;
     
     --primary: 0 84% 45%;
@@ -18,11 +18,11 @@
     --primary-hover: 0 84% 40%;
     --primary-light: 0 84% 50%;
     
-    --secondary: 0 0% 10%;
+    --secondary: 0 0% 8%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-hover: 0 0% 15%;
+    --secondary-hover: 0 0% 12%;
     
-    --muted: 0 0% 15%;
+    --muted: 0 0% 12%;
     --muted-foreground: 0 0% 70%;
     
     --accent: 0 84% 45%;
@@ -32,8 +32,8 @@
     --destructive-foreground: 0 0% 100%;
     --destructive-hover: 0 84% 40%;
     
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
+    --border: 0 0% 12%;
+    --input: 0 0% 12%;
     --ring: 0 84% 45%;
     
     --radius: 0.5rem;
@@ -91,17 +91,24 @@
   }
   
   .card {
-    @apply rounded-lg border border-white/10 bg-white/5 backdrop-blur-md shadow-lg relative z-10
+    @apply rounded-lg border border-white/10 relative z-10
     hover:shadow-glow hover:border-primary/20 transition-all duration-300 hover:-translate-y-2;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
     box-shadow: 
       0 0 40px rgba(255, 255, 255, 0.03),
-      inset 0 0 20px rgba(255, 255, 255, 0.02);
+      inset 0 0 20px rgba(255, 255, 255, 0.02),
+      0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   }
   
   .card:hover {
     box-shadow: 
       0 0 60px rgba(255, 255, 255, 0.05),
-      inset 0 0 30px rgba(255, 255, 255, 0.03);
+      inset 0 0 30px rgba(255, 255, 255, 0.03),
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.2) inset;
   }
   
   .card-header {
@@ -125,7 +132,20 @@
   }
 
   .glass-effect {
-    @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-inner-light relative z-10;
+    @apply relative z-10 border border-white/[0.02] shadow-inner-light;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.1) 100%,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(0, 0, 0, 0.1) 100%
+    );
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    box-shadow: 
+      0 0 40px rgba(255, 255, 255, 0.0005),
+      inset 0 0 20px rgba(255, 255, 255, 0.0003),
+      0 0 0 1px rgba(255, 255, 255, 0.005),
+      0 0 0 1px rgba(255, 255, 255, 0.008) inset;
   }
 
   .gradient-border {
@@ -141,16 +161,23 @@
   }
 
   .section {
-    @apply relative z-10 bg-white/5 backdrop-blur-md border border-white/5 rounded-2xl shadow-lg p-6 mb-6;
+    @apply relative z-10 border border-white/5 rounded-2xl shadow-lg p-6 mb-6;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
     box-shadow: 
       0 0 40px rgba(255, 255, 255, 0.03),
-      inset 0 0 20px rgba(255, 255, 255, 0.02);
+      inset 0 0 20px rgba(255, 255, 255, 0.02),
+      0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   }
 
   .section:hover {
     box-shadow: 
       0 0 60px rgba(255, 255, 255, 0.05),
-      inset 0 0 30px rgba(255, 255, 255, 0.03);
+      inset 0 0 30px rgba(255, 255, 255, 0.03),
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.2) inset;
   }
 
   .nav-link {
@@ -162,7 +189,7 @@
   }
 
   .nav-container {
-    @apply bg-black/80 backdrop-blur-md border-b border-white/5 shadow-depth;
+    @apply bg-black/80 backdrop-blur-2xl border-b border-white/5 shadow-depth;
   }
 
   .hero-section {

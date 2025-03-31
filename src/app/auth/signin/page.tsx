@@ -16,7 +16,8 @@ export default function SignIn() {
 
   useEffect(() => {
     if (session) {
-      const from = searchParams.get("from") || "/dashboard";
+      const admin = session.user.role === "ADMIN";
+      const from = searchParams.get("from") || admin ? "/admin" : "/dashboard";
       router.push(from);
     }
   }, [session, router, searchParams]);
@@ -43,7 +44,7 @@ export default function SignIn() {
           variant: "destructive",
         });
       } else {
-        const from = searchParams.get("from") || "/dashboard";
+        const from = searchParams.get("from") || session?.user.role === "ADMIN" ? "/admin" : "/dashboard";
         router.push(from);
         toast({
           title: "Success",
@@ -113,10 +114,7 @@ export default function SignIn() {
                   className="flex h-10 w-full rounded-md border border-input bg-secondary px-3 py-2 text-sm text-white ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
-              <Button disabled={isLoading} className="bg-primary hover:bg-primary-hover text-white">
-                {isLoading && (
-                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-foreground" />
-                )}
+              <Button disabled={isLoading}>
                 Sign In
               </Button>
             </div>

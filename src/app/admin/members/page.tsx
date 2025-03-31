@@ -118,7 +118,6 @@ export default function AdminMembers() {
                   </td>
                   <td className="px-4 py-2">
                     <Button
-                      variant="outline"
                       size="sm"
                       onClick={() => {
                         // Handle member actions
@@ -128,7 +127,7 @@ export default function AdminMembers() {
                         });
                       }}
                     >
-                      Manage
+                      View Details
                     </Button>
                   </td>
                 </tr>

@@ -31,6 +31,8 @@ export async function PUT(req: Request) {
       );
     }
 
+    let updatedUser;
+
     // If trying to change password
     if (currentPassword && newPassword) {
       // Verify current password
@@ -47,7 +49,7 @@ export async function PUT(req: Request) {
       const hashedPassword = await hash(newPassword, 12);
 
       // Update user with new password
-      await prisma.user.update({
+      updatedUser = await prisma.user.update({
         where: {
           id: user.id,
         },
@@ -59,7 +61,7 @@ export async function PUT(req: Request) {
       });
     } else {
       // Update user without changing password
-      await prisma.user.update({
+      updatedUser = await prisma.user.update({
         where: {
           id: user.id,
         },
@@ -74,9 +76,10 @@ export async function PUT(req: Request) {
       {
         message: "Profile updated successfully",
         user: {
-          id: user.id,
-          name,
-          email,
+          id: updatedUser.id,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          role: updatedUser.role,
         },
       },
       { status: 200 }

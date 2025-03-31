@@ -36,11 +36,21 @@ export function Navbar() {
           {session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <UserCircle className="h-6 w-6 text-gray-200" />
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full bg-primary/20 hover:bg-primary">
+                  {session.user?.image ? (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || "Profile"}
+                      className="h-10 w-10 rounded-full"
+                    />
+                  ) : (
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full text-white font-semibold">
+                      {session.user?.name?.charAt(0) || "U"}
+                    </div>
+                  )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuContent className="w-56 glass-effect border-white/10" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
@@ -51,21 +61,24 @@ export function Navbar() {
                     </p>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <Link href="/dashboard">
-                  <DropdownMenuItem className="cursor-pointer">Dashboard</DropdownMenuItem>
-                </Link>
-                <Link href="/profile">
-                  <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
-                </Link>
-                {session.user?.role === "ADMIN" && (
+                <DropdownMenuSeparator className="bg-white/10" />
+                
+                {session.user?.role === "ADMIN" 
+                ? (
                   <Link href="/admin">
-                    <DropdownMenuItem className="cursor-pointer">Admin Panel</DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer hover:bg-white/5">Admin Panel</DropdownMenuItem>
+                  </Link>
+                ) : (
+                  <Link href="/dashboard">
+                    <DropdownMenuItem className="cursor-pointer hover:bg-white/5">Dashboard</DropdownMenuItem>
                   </Link>
                 )}
-                <DropdownMenuSeparator />
+                <Link href="/profile">
+                  <DropdownMenuItem className="cursor-pointer hover:bg-white/5">Profile</DropdownMenuItem>
+                </Link>
+                <DropdownMenuSeparator className="bg-white/10" />
                 <DropdownMenuItem
-                  className="text-red-500 cursor-pointer"
+                  className="text-red-500 cursor-pointer hover:bg-white/5"
                   onClick={() => signOut()}
                 >
                   Log out
@@ -80,7 +93,7 @@ export function Navbar() {
                 </Button>
               </Link>
               <Link href="/auth/signup">
-                <Button className="bg-primary hover:bg-primary-hover text-white">
+                <Button>
                   Sign Up
                 </Button>
               </Link>

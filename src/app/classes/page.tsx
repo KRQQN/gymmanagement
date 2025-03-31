@@ -74,7 +74,7 @@ export default function ClassesPage() {
         {classes.map((cls) => (
           <div
             key={cls.id}
-            className="flex flex-col rounded-lg border bg-card p-6"
+            className="flex flex-col rounded-lg border  p-6 glass-effect"
           >
             <div className="flex-1 space-y-4">
               <div>

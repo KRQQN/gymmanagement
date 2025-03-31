@@ -52,13 +52,13 @@ const config: Config = {
           hover: "#ffffff30",
         },
         popover: {
-          DEFAULT: "#000000",
+          DEFAULT: "#ffffff05",
           foreground: "#ffffff",
         },
         card: {
-          DEFAULT: "#000000",
+          DEFAULT: "#ffffff05",
           foreground: "#ffffff",
-          hover: "#1f2937",
+          hover: "#ffffff10",
         },
       },
       borderRadius: {

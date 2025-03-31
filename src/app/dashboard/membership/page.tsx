@@ -53,6 +53,37 @@ export default function Membership() {
     }
   }, [status, toast]);
 
+  async function handleCancelSubscription() {
+    try {
+      const response = await fetch("/api/membership/cancel", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "Failed to cancel subscription");
+      }
+
+      toast({
+        title: "Success",
+        description: "Your subscription has been cancelled",
+      });
+
+      // Refresh membership data
+      const membershipResponse = await fetch("/api/user/membership");
+      if (membershipResponse.ok) {
+        const data = await membershipResponse.json();
+        setMembership(data.membership);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to cancel subscription",
+        variant: "destructive",
+      });
+    }
+  }
+
   if (status === "loading" || isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -104,10 +135,18 @@ export default function Membership() {
                 </div>
               </div>
 
-              <div className="pt-4">
-                <Button variant="outline" asChild>
+              <div className="flex gap-4 pt-4">
+                <Button asChild>
                   <a href="/dashboard/membership/payment">Make Payment</a>
                 </Button>
+                {membership.status === "ACTIVE" && (
+                  <Button 
+                    variant="destructive" 
+                    onClick={handleCancelSubscription}
+                  >
+                    Cancel Subscription
+                  </Button>
+                )}
               </div>
             </div>
           </div>
