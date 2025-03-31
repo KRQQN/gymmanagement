@@ -31,31 +31,82 @@ export async function GET() {
       },
     });
 
-    // Get monthly revenue
-    const firstDayOfMonth = new Date();
-    firstDayOfMonth.setDate(1);
-    firstDayOfMonth.setHours(0, 0, 0, 0);
-    
-    // Calculate expected monthly revenue from active memberships
-    const activeMemberships = await prisma.membership.findMany({
+    // Calculate raw monthly revenue (total payments received this month)
+    const currentMonthStart = new Date();
+    currentMonthStart.setDate(1);
+    currentMonthStart.setHours(0, 0, 0, 0);
+    const currentMonthEnd = new Date(currentMonthStart.getFullYear(), currentMonthStart.getMonth() + 1, 0, 23, 59, 59);
+
+    const rawMonthlyRevenue = await prisma.membership.aggregate({
       where: {
-        status: 'ACTIVE',
-        endDate: {
-          gte: new Date(),
+        startDate: {
+          gte: currentMonthStart,
+          lte: currentMonthEnd,
         },
       },
-      select: {
+      _sum: {
         price: true,
       },
     });
 
-    const monthlyRevenue = activeMemberships.reduce((sum, membership) => sum + membership.price, 0);
+    // Calculate accrual-based revenue
+    const memberships = await prisma.membership.findMany({
+      where: {
+        status: 'ACTIVE',
+        AND: [
+          { startDate: { lte: currentMonthEnd } },
+          { endDate: { gte: currentMonthStart } },
+        ],
+      },
+      include: {
+        plan: true,
+        user: true,
+      },
+    });
+
+    let accrualMonthlyRevenue = 0;
+    let membershipDetails = [];
+
+    for (const membership of memberships) {
+      // Calculate the number of days in the membership period
+      const membershipStart = new Date(membership.startDate);
+      const membershipEnd = new Date(membership.endDate);
+      const totalDays = Math.ceil((membershipEnd.getTime() - membershipStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+      // Calculate daily rate
+      const dailyRate = membership.price / totalDays;
+
+      // Calculate days in current month
+      const monthStart = new Date(Math.max(membershipStart.getTime(), currentMonthStart.getTime()));
+      const monthEnd = new Date(Math.min(membershipEnd.getTime(), currentMonthEnd.getTime()));
+      const daysInMonth = Math.ceil((monthEnd.getTime() - monthStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+      // Calculate revenue for current month
+      const monthlyRevenue = dailyRate * daysInMonth;
+
+      membershipDetails.push({
+        memberId: membership.userId,
+        memberName: membership.user.name || 'Unknown',
+        planName: membership.plan.name,
+        totalPrice: membership.price,
+        totalDays,
+        daysInCurrentMonth: daysInMonth,
+        dailyRate,
+        monthlyRevenue,
+        startDate: membershipStart.toISOString(),
+        endDate: membershipEnd.toISOString(),
+      });
+
+      accrualMonthlyRevenue += monthlyRevenue;
+    }
 
     return NextResponse.json({
       totalMembers,
       activeMembers,
       todayCheckIns,
-      monthlyRevenue,
+      monthlyRevenue: rawMonthlyRevenue._sum.price || 0, // Raw monthly revenue
+      accrualMonthlyRevenue, // Accrual-based monthly revenue
+      revenueDetails: membershipDetails,
     });
   } catch (error) {
     return NextResponse.json(
