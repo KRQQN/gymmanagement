@@ -3,6 +3,15 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
+  // Get the demo gym
+  const gym = await prisma.gym.findFirst({
+    where: { name: 'Demo Gym' },
+  });
+
+  if (!gym) {
+    throw new Error('Demo gym not found. Please run create-gym.ts first.');
+  }
+
   // Create default membership plans
   const plans = [
     {
@@ -11,6 +20,7 @@ async function main() {
       description: 'Perfect for beginners',
       price: 29.99,
       features: ['Access to gym', 'Basic equipment usage', 'Locker room access', 'Free parking'],
+      gymId: gym.id,
     },
     {
       id: 'premium',
@@ -18,6 +28,7 @@ async function main() {
       description: 'For dedicated fitness enthusiasts',
       price: 49.99,
       features: ['All Basic features', 'Group classes', 'Personal trainer (2x/month)', 'Spa access'],
+      gymId: gym.id,
     },
     {
       id: 'vip',
@@ -25,6 +36,7 @@ async function main() {
       description: 'Ultimate fitness experience',
       price: 79.99,
       features: ['All Premium features', 'Unlimited personal training', 'Nutrition consultation', 'Priority booking'],
+      gymId: gym.id,
     },
     {
       id: 'family',
@@ -32,6 +44,7 @@ async function main() {
       description: 'Perfect for families',
       price: 99.99,
       features: ['All Premium features', 'Family membership (up to 4 members)', 'Kids club access', 'Family locker room'],
+      gymId: gym.id,
     },
   ];
 
@@ -51,6 +64,7 @@ async function main() {
       email: 'john.smith@example.com',
       password: '$2a$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu9.m', // password: 'password123'
       role: 'STAFF',
+      gymId: gym.id,
     },
     {
       id: 'instructor2',
@@ -58,6 +72,7 @@ async function main() {
       email: 'sarah.johnson@example.com',
       password: '$2a$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu9.m', // password: 'password123'
       role: 'STAFF',
+      gymId: gym.id,
     },
     {
       id: 'instructor3',
@@ -65,14 +80,28 @@ async function main() {
       email: 'mike.wilson@example.com',
       password: '$2a$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu9.m', // password: 'password123'
       role: 'STAFF',
+      gymId: gym.id,
     },
   ];
 
   for (const instructor of instructors) {
     await prisma.user.upsert({
       where: { id: instructor.id },
-      update: instructor,
-      create: instructor,
+      update: {
+        name: instructor.name,
+        email: instructor.email,
+        password: instructor.password,
+        role: 'STAFF' as const,
+        gymId: instructor.gymId
+      },
+      create: {
+        id: instructor.id,
+        name: instructor.name,
+        email: instructor.email,
+        password: instructor.password,
+        role: 'STAFF' as const,
+        gymId: instructor.gymId
+      },
     });
   }
 
@@ -95,6 +124,7 @@ async function main() {
       equipment: ['Yoga mat', 'Blocks', 'Strap'],
       requirements: ['No prior experience needed', 'Comfortable clothing'],
       instructorId: 'instructor1',
+      gymId: gym.id,
     },
     {
       id: 'class2',
@@ -113,6 +143,7 @@ async function main() {
       equipment: ['None'],
       requirements: ['Good fitness level', 'Water bottle'],
       instructorId: 'instructor2',
+      gymId: gym.id,
     },
     {
       id: 'class3',
@@ -131,6 +162,7 @@ async function main() {
       equipment: ['Dumbbells', 'Barbells', 'Resistance bands'],
       requirements: ['Basic gym experience', 'Proper form knowledge'],
       instructorId: 'instructor3',
+      gymId: gym.id,
     },
     {
       id: 'class4',
@@ -149,6 +181,7 @@ async function main() {
       equipment: ['None'],
       requirements: ['Comfortable shoes', 'Water bottle'],
       instructorId: 'instructor1',
+      gymId: gym.id,
     },
     {
       id: 'class5',
@@ -167,6 +200,7 @@ async function main() {
       equipment: ['Pilates mat', 'Resistance bands'],
       requirements: ['No prior experience needed', 'Comfortable clothing'],
       instructorId: 'instructor2',
+      gymId: gym.id,
     },
   ];
 

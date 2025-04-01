@@ -40,6 +40,25 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model Gym {
+  id            String    @id @default(cuid())
+  name          String
+  address       String
+  phone         String?
+  email         String?
+  apiKey        String    @unique
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  users         User[]
+  membershipPlans MembershipPlan[]
+  checkIns      CheckIn[]
+  payments      Payment[]
+  classes       GymClass[]
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -48,14 +67,20 @@ model User {
   emailVerified DateTime?
   image         String?
   role          UserRole  @default(MEMBER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  gym           Gym       @relation(fields: [gymId], references: [id])
+  gymId         String
   accounts      Account[]
   sessions      Session[]
   membership    Membership?
-  classes       GymClass[]
   checkIns      CheckIn[]
   payments      Payment[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  classes       GymClass[]
+
+  @@index([gymId])
 }
 
 model VerificationToken {
@@ -64,12 +89,6 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
-}
-
-enum UserRole {
-  ADMIN
-  STAFF
-  MEMBER
 }
 
 model MembershipPlan {
@@ -81,26 +100,103 @@ model MembershipPlan {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // Relations
+  gym         Gym      @relation(fields: [gymId], references: [id])
+  gymId       String
+  memberships Membership[]
+
+  @@index([gymId])
 }
 
 model Membership {
-  id            String        @id @default(cuid())
-  userId        String        @unique
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type          MembershipType
+  id            String           @id @default(cuid())
   startDate     DateTime
   endDate       DateTime
+  type          MembershipType
   status        MembershipStatus @default(ACTIVE)
   price         Float
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  // Relations
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String           @unique
+  plan          MembershipPlan   @relation(fields: [planId], references: [id])
+  planId        String
+
+  @@index([planId])
+}
+
+model CheckIn {
+  id            String    @id @default(cuid())
+  checkInTime   DateTime  @default(now())
+  checkOutTime  DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  gym           Gym       @relation(fields: [gymId], references: [id])
+  gymId         String
+
+  @@index([gymId])
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  amount        Float
+  status        PaymentStatus
+  paymentMethod PaymentMethod
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+
+  // Relations
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  gym           Gym           @relation(fields: [gymId], references: [id])
+  gymId         String
+
+  @@index([gymId])
+}
+
+model GymClass {
+  id            String   @id @default(cuid())
+  name          String
+  description   String
+  schedule      Json
+  duration      Int
+  capacity      Int
+  bookedSpots   Int      @default(0)
+  category      String?
+  difficulty    String?
+  equipment     String[]
+  requirements  String[]
+  instructor    String?  // Optional instructor name
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  gym           Gym      @relation(fields: [gymId], references: [id])
+  gymId         String
+  attendees     User[]   // Many-to-many with User
+
+  @@index([gymId])
+}
+
+enum UserRole {
+  ADMIN
+  STAFF
+  MEMBER
 }
 
 enum MembershipType {
-  BASIC
-  PREMIUM
-  VIP
-  FAMILY
+  ONE_DAY
+  ONE_WEEK
+  ONE_MONTH
+  SIX_MONTHS
+  ANNUAL
 }
 
 enum MembershipStatus {
@@ -108,27 +204,6 @@ enum MembershipStatus {
   EXPIRED
   CANCELLED
   PENDING
-}
-
-model CheckIn {
-  id          String    @id @default(cuid())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  checkInTime DateTime  @default(now())
-  checkOutTime DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-model Payment {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount        Float
-  status        PaymentStatus
-  paymentMethod PaymentMethod
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
 }
 
 enum PaymentStatus {
@@ -144,24 +219,4 @@ enum PaymentMethod {
   DEBIT_CARD
   BANK_TRANSFER
   ONLINE
-}
-
-model GymClass {
-  id            String   @id @default(cuid())
-  name          String
-  description   String
-  schedule      Json
-  duration      Int
-  capacity      Int
-  bookedSpots   Int      @default(0)
-  category      String?
-  difficulty    String?
-  equipment     String[]
-  requirements  String[]
-  instructorId  String
-  instructor    User     @relation(fields: [instructorId], references: [id])
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@index([instructorId])
 }

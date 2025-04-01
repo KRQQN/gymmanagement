@@ -5,12 +5,16 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { RevenueDisplay } from "@/components/admin/RevenueDisplay";
+import { RevenueGraphs } from "@/components/admin/RevenueGraphs";
 
 interface Stats {
   totalMembers: number;
+  newMembers: number;
   activeMembers: number;
   todayCheckIns: number;
-  monthlyRevenue: number;
+  rawRevenue: number;
+  accrualRevenue: number;
 }
 
 export default function AdminDashboard() {
@@ -75,11 +79,20 @@ export default function AdminDashboard() {
             <p className="text-3xl font-bold">{stats.todayCheckIns}</p>
           </div>
           <div className="p-6 bg-card rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-2">Monthly Revenue</h3>
-            <p className="text-3xl font-bold">${stats.monthlyRevenue}</p>
+            <h3 className="text-lg font-semibold mb-2">New Members</h3>
+            <p className="text-3xl font-bold">{stats.newMembers}</p>
+            <p className="text-sm text-muted-foreground">This month</p>
           </div>
         </div>
       )}
+
+      <div className="mb-8">
+        <RevenueDisplay />
+      </div>
+
+      <div className="mb-8">
+        <RevenueGraphs />
+      </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-lg border bg-card p-6">

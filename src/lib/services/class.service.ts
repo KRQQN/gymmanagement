@@ -16,9 +16,8 @@ export interface Class {
   difficulty: string | null;
   equipment: string[];
   requirements: string[];
-  instructor: {
-    name: string | null;
-  };
+  attendees: string[];
+  instructor: string;
 }
 
 export class ClassService {
@@ -53,7 +52,7 @@ export class ClassService {
     };
   }
 
-  static async createClass(data: Omit<Class, "id" | "instructor"> & { instructorId: string }): Promise<Class> {
+  static async createClass(data: Omit<Class, "id"> & { instructorId: string }): Promise<Class> {
     const response = await fetch("/api/classes", {
       method: "POST",
       headers: {
@@ -74,7 +73,7 @@ export class ClassService {
     };
   }
 
-  static async updateClass(id: string, data: Partial<Omit<Class, "id" | "instructor">>): Promise<Class> {
+  static async updateClass(id: string, data: Partial<Omit<Class, "id" >>): Promise<Class> {
     const response = await fetch(`/api/classes/${id}`, {
       method: "PUT",
       headers: {

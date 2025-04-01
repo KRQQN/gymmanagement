@@ -10,15 +10,7 @@ export async function GET() {
   }
 
   try {
-    const classes = await prisma.gymClass.findMany({
-      include: {
-        instructor: {
-          select: {
-            name: true,
-          },
-        },
-      },
-    });
+    const classes = await prisma.gymClass.findMany();
 
     return NextResponse.json(classes);
   } catch (error) {
@@ -40,13 +32,7 @@ export async function POST(request: Request) {
         ...data,
         schedule: data.schedule,
       },
-      include: {
-        instructor: {
-          select: {
-            name: true,
-          },
-        },
-      },
+      
     });
 
     return NextResponse.json(classData);
