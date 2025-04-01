@@ -23,9 +23,6 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
 
   useEffect(() => {
-
-    console.log('status', status)
-    console.log('admin', session?.user?.role)
     if (status === "unauthenticated" || session?.user?.role !== "ADMIN") {
       router.push("/auth/signin");
     }

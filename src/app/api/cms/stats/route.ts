@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
 
 export async function GET() {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     
-    if (!session) {
+    if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -47,15 +48,16 @@ export async function GET() {
     });
 
     // Calculate raw monthly revenue (total payments received this month)
-    const rawMonthlyRevenue = await prisma.membership.aggregate({
+    const rawMonthlyRevenue = await prisma.payment.aggregate({
       where: {
-        startDate: {
+        createdAt: {
           gte: currentMonthStart,
           lte: currentMonthEnd,
         },
+        status: 'COMPLETED',
       },
       _sum: {
-        price: true,
+        amount: true,
       },
     });
 
@@ -85,7 +87,7 @@ export async function GET() {
       const membershipStart = new Date(membership.startDate);
       const membershipEnd = new Date(membership.endDate);
       const totalDays = Math.ceil((membershipEnd.getTime() - membershipStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-      const dailyRate = membership.price / totalDays;
+      const dailyRate = membership.plan.price / totalDays;
 
       // Calculate days in current month
       const periodStart = new Date(Math.max(membershipStart.getTime(), currentMonthStart.getTime()));
@@ -105,7 +107,7 @@ export async function GET() {
       };
 
       group.count++;
-      group.totalRevenue += membership.price;
+      group.totalRevenue += membership.plan.price;
       group.monthlyRevenue += monthlyRevenue;
       membershipGroups.set(planName, group);
     }
@@ -123,7 +125,7 @@ export async function GET() {
       newMembers,
       activeMembers,
       todayCheckIns,
-      rawRevenue: rawMonthlyRevenue._sum.price || 0,
+      rawRevenue: rawMonthlyRevenue._sum.amount || 0,
       accrualRevenue,
       memberships: membershipDetails,
     });

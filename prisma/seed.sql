@@ -53,30 +53,26 @@ VALUES
 -- Create Payments
 INSERT INTO "Payment" (id, "userId", "gymId", amount, status, "paymentMethod", "createdAt", "updatedAt")
 VALUES
-  -- Current active memberships
-  ('pay001', 'member001', 'gym001', 399.99, 'COMPLETED', 'CREDIT_CARD', CURRENT_TIMESTAMP - INTERVAL '60 days', CURRENT_TIMESTAMP - INTERVAL '60 days'),
-  ('pay002', 'member002', 'gym001', 79.99, 'COMPLETED', 'DEBIT_CARD', CURRENT_TIMESTAMP - INTERVAL '45 days', CURRENT_TIMESTAMP - INTERVAL '45 days'),
-  ('pay003', 'member003', 'gym001', 79.99, 'COMPLETED', 'BANK_TRANSFER', CURRENT_TIMESTAMP - INTERVAL '30 days', CURRENT_TIMESTAMP - INTERVAL '30 days'),
-  ('pay004', 'member004', 'gym001', 699.99, 'COMPLETED', 'CREDIT_CARD', CURRENT_TIMESTAMP - INTERVAL '15 days', CURRENT_TIMESTAMP - INTERVAL '15 days'),
-  ('pay005', 'member005', 'gym001', 39.99, 'COMPLETED', 'ONLINE', CURRENT_TIMESTAMP - INTERVAL '7 days', CURRENT_TIMESTAMP - INTERVAL '7 days'),
-  ('pay014', 'member006', 'gym001', 79.99, 'COMPLETED', 'CREDIT_CARD', CURRENT_TIMESTAMP - INTERVAL '3 days', CURRENT_TIMESTAMP - INTERVAL '3 days'),
+  -- Current month payments
+  ('pay001', 'member001', 'gym001', 399.99, 'COMPLETED', 'CREDIT_CARD', CURRENT_TIMESTAMP - INTERVAL '5 days', CURRENT_TIMESTAMP - INTERVAL '5 days'),
+  ('pay002', 'member002', 'gym001', 79.99, 'COMPLETED', 'DEBIT_CARD', CURRENT_TIMESTAMP - INTERVAL '4 days', CURRENT_TIMESTAMP - INTERVAL '4 days'),
+  ('pay003', 'member003', 'gym001', 79.99, 'COMPLETED', 'BANK_TRANSFER', CURRENT_TIMESTAMP - INTERVAL '3 days', CURRENT_TIMESTAMP - INTERVAL '3 days'),
+  ('pay004', 'member004', 'gym001', 699.99, 'COMPLETED', 'CREDIT_CARD', CURRENT_TIMESTAMP - INTERVAL '2 days', CURRENT_TIMESTAMP - INTERVAL '2 days'),
+  ('pay005', 'member005', 'gym001', 39.99, 'COMPLETED', 'ONLINE', CURRENT_TIMESTAMP - INTERVAL '1 day', CURRENT_TIMESTAMP - INTERVAL '1 day'),
+  ('pay014', 'member006', 'gym001', 79.99, 'COMPLETED', 'CREDIT_CARD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   
   -- Past payments for Bob (member002)
-  ('pay006', 'member002', 'gym001', 79.99, 'COMPLETED', 'DEBIT_CARD', CURRENT_TIMESTAMP - INTERVAL '75 days', CURRENT_TIMESTAMP - INTERVAL '75 days'),
-  ('pay007', 'member002', 'gym001', 79.99, 'COMPLETED', 'DEBIT_CARD', CURRENT_TIMESTAMP - INTERVAL '105 days', CURRENT_TIMESTAMP - INTERVAL '105 days'),
+  ('pay006', 'member002', 'gym001', 79.99, 'COMPLETED', 'DEBIT_CARD', CURRENT_TIMESTAMP - INTERVAL '35 days', CURRENT_TIMESTAMP - INTERVAL '35 days'),
+  ('pay007', 'member002', 'gym001', 79.99, 'COMPLETED', 'DEBIT_CARD', CURRENT_TIMESTAMP - INTERVAL '65 days', CURRENT_TIMESTAMP - INTERVAL '65 days'),
   
   -- Past payments for Alice (member001)
   ('pay008', 'member001', 'gym001', 399.99, 'COMPLETED', 'CREDIT_CARD', CURRENT_TIMESTAMP - INTERVAL '180 days', CURRENT_TIMESTAMP - INTERVAL '180 days'),
   ('pay009', 'member001', 'gym001', 399.99, 'COMPLETED', 'CREDIT_CARD', CURRENT_TIMESTAMP - INTERVAL '240 days', CURRENT_TIMESTAMP - INTERVAL '240 days'),
   
-  -- Failed payments
+  -- Failed and pending payments
   ('pay010', 'member002', 'gym001', 79.99, 'FAILED', 'CREDIT_CARD', CURRENT_TIMESTAMP - INTERVAL '20 days', CURRENT_TIMESTAMP - INTERVAL '20 days'),
   ('pay011', 'member003', 'gym001', 79.99, 'FAILED', 'BANK_TRANSFER', CURRENT_TIMESTAMP - INTERVAL '25 days', CURRENT_TIMESTAMP - INTERVAL '25 days'),
-  
-  -- Refunded payments
   ('pay012', 'member004', 'gym001', 699.99, 'REFUNDED', 'CREDIT_CARD', CURRENT_TIMESTAMP - INTERVAL '45 days', CURRENT_TIMESTAMP - INTERVAL '45 days'),
-  
-  -- Pending payments
   ('pay013', 'member005', 'gym001', 39.99, 'PENDING', 'ONLINE', CURRENT_TIMESTAMP - INTERVAL '2 days', CURRENT_TIMESTAMP - INTERVAL '2 days');
 
 -- Create Check-ins
