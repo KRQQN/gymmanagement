@@ -23,7 +23,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
 
   useEffect(() => {
-    if (status === "unauthenticated" || session?.user?.role !== "ADMIN") {
+    if (status === "unauthenticated" || (status === "authenticated" && session?.user?.role !== "ADMIN")) {
       router.push("/auth/signin");
     }
   }, [status, session, router]);
