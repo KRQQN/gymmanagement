@@ -51,7 +51,7 @@ export default function MembershipPlans() {
     }
 
     try {
-      const response = await fetch("/api/membership/subscribe", {
+      const response = await fetch("/api/membership/create-checkout-session", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -63,19 +63,15 @@ export default function MembershipPlans() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || "Failed to subscribe to plan");
+        throw new Error(data.message || "Failed to create checkout session");
       }
 
-      toast({
-        title: "Success",
-        description: "Successfully subscribed to membership plan",
-      });
-
-      router.push("/dashboard/membership");
+      const { url } = await response.json();
+      window.location.href = url;
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to subscribe to plan",
+        description: error instanceof Error ? error.message : "Failed to create checkout session",
         variant: "destructive",
       });
     }

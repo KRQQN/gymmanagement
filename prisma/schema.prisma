@@ -149,6 +149,7 @@ model Payment {
   amount        Float
   status        PaymentStatus
   paymentMethod PaymentMethod
+  stripeSessionId String?     @unique
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
