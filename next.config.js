@@ -9,6 +9,9 @@ const nextConfig = {
     config.externals = [...(config.externals || []), 'pg'];
     return config;
   },
+  images: {
+    domains: ['lh3.googleusercontent.com'],
+  },
 };
 
 module.exports = nextConfig; 

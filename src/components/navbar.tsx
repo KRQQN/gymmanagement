@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UserCircle } from "lucide-react";
+import Image from "next/image";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -36,16 +37,18 @@ export function Navbar() {
           {session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full bg-primary/20 hover:bg-primary">
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full bg-primary/20 hover:bg-primary/40 p-0 overflow-hidden">
                   {session.user?.image ? (
-                    <img
+                    <Image
                       src={session.user.image}
-                      alt={session.user.name || "Profile"}
-                      className="h-10 w-10 rounded-full"
+                      alt={session.user?.name?.[0]?.toUpperCase() || "U"}
+                      fill
+                      className="object-cover"
+                      sizes="40px"
                     />
                   ) : (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full text-white font-semibold">
-                      {session.user?.name?.charAt(0) || "U"}
+                    <div className="h-full w-full flex items-center justify-center text-white text-base font-medium">
+                      {session.user?.name?.[0]?.toUpperCase() || "U"}
                     </div>
                   )}
                 </Button>
