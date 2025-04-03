@@ -40,40 +40,40 @@ VALUES
   ('plan004', '6-Month Plan', 'Great value for committed members', 399.99, ARRAY['Full gym access', 'Locker room access', 'Group classes included', 'Quarterly fitness assessment', 'Three personal training sessions', 'Nutrition consultation'], true, 'gym001', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   ('plan005', 'Annual Plan', 'Best value for dedicated members', 699.99, ARRAY['Full gym access', 'Locker room access', 'Group classes included', 'Quarterly fitness assessment', 'Monthly personal training session', 'Nutrition consultation', 'Guest passes (2 per month)', 'Priority booking for classes'], true, 'gym001', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
--- Create Memberships
-INSERT INTO "Membership" (id, "userId", "planId", "startDate", "endDate", price, status, type, "createdAt", "updatedAt")
+-- Create Memberships with Stripe fields
+INSERT INTO "Membership" (id, "userId", "planId", "startDate", "endDate", price, status, type, "stripeSubscriptionId", "stripeCustomerId", "createdAt", "updatedAt")
 VALUES
-  ('mem001', 'member001', 'plan004', CURRENT_TIMESTAMP - INTERVAL '60 days', CURRENT_TIMESTAMP + INTERVAL '120 days', 399.99, 'ACTIVE', 'SIX_MONTHS', CURRENT_TIMESTAMP - INTERVAL '60 days', CURRENT_TIMESTAMP),
-  ('mem002', 'member002', 'plan003', CURRENT_TIMESTAMP - INTERVAL '45 days', CURRENT_TIMESTAMP - INTERVAL '15 days', 79.99, 'EXPIRED', 'ONE_MONTH', CURRENT_TIMESTAMP - INTERVAL '45 days', CURRENT_TIMESTAMP),
-  ('mem003', 'member003', 'plan003', CURRENT_TIMESTAMP - INTERVAL '30 days', CURRENT_TIMESTAMP, 79.99, 'ACTIVE', 'ONE_MONTH', CURRENT_TIMESTAMP - INTERVAL '30 days', CURRENT_TIMESTAMP),
-  ('mem004', 'member004', 'plan005', CURRENT_TIMESTAMP - INTERVAL '15 days', CURRENT_TIMESTAMP + INTERVAL '350 days', 699.99, 'ACTIVE', 'ANNUAL', CURRENT_TIMESTAMP - INTERVAL '15 days', CURRENT_TIMESTAMP),
-  ('mem005', 'member005', 'plan002', CURRENT_TIMESTAMP - INTERVAL '7 days', CURRENT_TIMESTAMP, 39.99, 'ACTIVE', 'ONE_WEEK', CURRENT_TIMESTAMP - INTERVAL '7 days', CURRENT_TIMESTAMP),
-  ('mem006', 'member006', 'plan003', CURRENT_TIMESTAMP - INTERVAL '3 days', CURRENT_TIMESTAMP + INTERVAL '27 days', 79.99, 'ACTIVE', 'ONE_MONTH', CURRENT_TIMESTAMP - INTERVAL '3 days', CURRENT_TIMESTAMP);
+  ('mem001', 'member001', 'plan004', CURRENT_TIMESTAMP - INTERVAL '60 days', CURRENT_TIMESTAMP + INTERVAL '120 days', 399.99, 'ACTIVE', 'SIX_MONTHS', 'sub_1234567890', 'cus_1234567890', CURRENT_TIMESTAMP - INTERVAL '60 days', CURRENT_TIMESTAMP),
+  ('mem002', 'member002', 'plan003', CURRENT_TIMESTAMP - INTERVAL '45 days', CURRENT_TIMESTAMP - INTERVAL '15 days', 79.99, 'EXPIRED', 'ONE_MONTH', 'sub_2345678901', 'cus_2345678901', CURRENT_TIMESTAMP - INTERVAL '45 days', CURRENT_TIMESTAMP),
+  ('mem003', 'member003', 'plan003', CURRENT_TIMESTAMP - INTERVAL '30 days', CURRENT_TIMESTAMP, 79.99, 'ACTIVE', 'ONE_MONTH', 'sub_3456789012', 'cus_3456789012', CURRENT_TIMESTAMP - INTERVAL '30 days', CURRENT_TIMESTAMP),
+  ('mem004', 'member004', 'plan005', CURRENT_TIMESTAMP - INTERVAL '15 days', CURRENT_TIMESTAMP + INTERVAL '350 days', 699.99, 'ACTIVE', 'ANNUAL', 'sub_4567890123', 'cus_4567890123', CURRENT_TIMESTAMP - INTERVAL '15 days', CURRENT_TIMESTAMP),
+  ('mem005', 'member005', 'plan002', CURRENT_TIMESTAMP - INTERVAL '7 days', CURRENT_TIMESTAMP, 39.99, 'ACTIVE', 'ONE_WEEK', 'sub_5678901234', 'cus_5678901234', CURRENT_TIMESTAMP - INTERVAL '7 days', CURRENT_TIMESTAMP),
+  ('mem006', 'member006', 'plan003', CURRENT_TIMESTAMP - INTERVAL '3 days', CURRENT_TIMESTAMP + INTERVAL '27 days', 79.99, 'ACTIVE', 'ONE_MONTH', 'sub_6789012345', 'cus_6789012345', CURRENT_TIMESTAMP - INTERVAL '3 days', CURRENT_TIMESTAMP);
 
--- Create Payments
-INSERT INTO "Payment" (id, "userId", "gymId", amount, status, "paymentMethod", "createdAt", "updatedAt")
+-- Create Payments with Stripe fields
+INSERT INTO "Payment" (id, "userId", "gymId", amount, status, "paymentMethod", "stripeSessionId", "stripePaymentIntentId", "stripeSubscriptionId", "createdAt", "updatedAt")
 VALUES
   -- Current month payments
-  ('pay001', 'member001', 'gym001', 399.99, 'COMPLETED', 'CREDIT_CARD', CURRENT_TIMESTAMP - INTERVAL '5 days', CURRENT_TIMESTAMP - INTERVAL '5 days'),
-  ('pay002', 'member002', 'gym001', 79.99, 'COMPLETED', 'DEBIT_CARD', CURRENT_TIMESTAMP - INTERVAL '4 days', CURRENT_TIMESTAMP - INTERVAL '4 days'),
-  ('pay003', 'member003', 'gym001', 79.99, 'COMPLETED', 'BANK_TRANSFER', CURRENT_TIMESTAMP - INTERVAL '3 days', CURRENT_TIMESTAMP - INTERVAL '3 days'),
-  ('pay004', 'member004', 'gym001', 699.99, 'COMPLETED', 'CREDIT_CARD', CURRENT_TIMESTAMP - INTERVAL '2 days', CURRENT_TIMESTAMP - INTERVAL '2 days'),
-  ('pay005', 'member005', 'gym001', 39.99, 'COMPLETED', 'ONLINE', CURRENT_TIMESTAMP - INTERVAL '1 day', CURRENT_TIMESTAMP - INTERVAL '1 day'),
-  ('pay014', 'member006', 'gym001', 79.99, 'COMPLETED', 'CREDIT_CARD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  ('pay001', 'member001', 'gym001', 399.99, 'COMPLETED', 'CREDIT_CARD', 'cs_1234567890', 'pi_1234567890', 'sub_1234567890', CURRENT_TIMESTAMP - INTERVAL '5 days', CURRENT_TIMESTAMP - INTERVAL '5 days'),
+  ('pay002', 'member002', 'gym001', 79.99, 'COMPLETED', 'DEBIT_CARD', 'cs_2345678901', 'pi_2345678901', 'sub_2345678901', CURRENT_TIMESTAMP - INTERVAL '4 days', CURRENT_TIMESTAMP - INTERVAL '4 days'),
+  ('pay003', 'member003', 'gym001', 79.99, 'COMPLETED', 'BANK_TRANSFER', 'cs_3456789012', 'pi_3456789012', 'sub_3456789012', CURRENT_TIMESTAMP - INTERVAL '3 days', CURRENT_TIMESTAMP - INTERVAL '3 days'),
+  ('pay004', 'member004', 'gym001', 699.99, 'COMPLETED', 'CREDIT_CARD', 'cs_4567890123', 'pi_4567890123', 'sub_4567890123', CURRENT_TIMESTAMP - INTERVAL '2 days', CURRENT_TIMESTAMP - INTERVAL '2 days'),
+  ('pay005', 'member005', 'gym001', 39.99, 'COMPLETED', 'ONLINE', 'cs_5678901234', 'pi_5678901234', 'sub_5678901234', CURRENT_TIMESTAMP - INTERVAL '1 day', CURRENT_TIMESTAMP - INTERVAL '1 day'),
+  ('pay014', 'member006', 'gym001', 79.99, 'COMPLETED', 'CREDIT_CARD', 'cs_6789012345', 'pi_6789012345', 'sub_6789012345', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   
   -- Past payments for Bob (member002)
-  ('pay006', 'member002', 'gym001', 79.99, 'COMPLETED', 'DEBIT_CARD', CURRENT_TIMESTAMP - INTERVAL '35 days', CURRENT_TIMESTAMP - INTERVAL '35 days'),
-  ('pay007', 'member002', 'gym001', 79.99, 'COMPLETED', 'DEBIT_CARD', CURRENT_TIMESTAMP - INTERVAL '65 days', CURRENT_TIMESTAMP - INTERVAL '65 days'),
+  ('pay006', 'member002', 'gym001', 79.99, 'COMPLETED', 'DEBIT_CARD', 'cs_7890123456', 'pi_7890123456', 'sub_2345678901', CURRENT_TIMESTAMP - INTERVAL '35 days', CURRENT_TIMESTAMP - INTERVAL '35 days'),
+  ('pay007', 'member002', 'gym001', 79.99, 'COMPLETED', 'DEBIT_CARD', 'cs_8901234567', 'pi_8901234567', 'sub_2345678901', CURRENT_TIMESTAMP - INTERVAL '65 days', CURRENT_TIMESTAMP - INTERVAL '65 days'),
   
   -- Past payments for Alice (member001)
-  ('pay008', 'member001', 'gym001', 399.99, 'COMPLETED', 'CREDIT_CARD', CURRENT_TIMESTAMP - INTERVAL '180 days', CURRENT_TIMESTAMP - INTERVAL '180 days'),
-  ('pay009', 'member001', 'gym001', 399.99, 'COMPLETED', 'CREDIT_CARD', CURRENT_TIMESTAMP - INTERVAL '240 days', CURRENT_TIMESTAMP - INTERVAL '240 days'),
+  ('pay008', 'member001', 'gym001', 399.99, 'COMPLETED', 'CREDIT_CARD', 'cs_9012345678', 'pi_9012345678', 'sub_1234567890', CURRENT_TIMESTAMP - INTERVAL '180 days', CURRENT_TIMESTAMP - INTERVAL '180 days'),
+  ('pay009', 'member001', 'gym001', 399.99, 'COMPLETED', 'CREDIT_CARD', 'cs_0123456789', 'pi_0123456789', 'sub_1234567890', CURRENT_TIMESTAMP - INTERVAL '240 days', CURRENT_TIMESTAMP - INTERVAL '240 days'),
   
   -- Failed and pending payments
-  ('pay010', 'member002', 'gym001', 79.99, 'FAILED', 'CREDIT_CARD', CURRENT_TIMESTAMP - INTERVAL '20 days', CURRENT_TIMESTAMP - INTERVAL '20 days'),
-  ('pay011', 'member003', 'gym001', 79.99, 'FAILED', 'BANK_TRANSFER', CURRENT_TIMESTAMP - INTERVAL '25 days', CURRENT_TIMESTAMP - INTERVAL '25 days'),
-  ('pay012', 'member004', 'gym001', 699.99, 'REFUNDED', 'CREDIT_CARD', CURRENT_TIMESTAMP - INTERVAL '45 days', CURRENT_TIMESTAMP - INTERVAL '45 days'),
-  ('pay013', 'member005', 'gym001', 39.99, 'PENDING', 'ONLINE', CURRENT_TIMESTAMP - INTERVAL '2 days', CURRENT_TIMESTAMP - INTERVAL '2 days');
+  ('pay010', 'member002', 'gym001', 79.99, 'FAILED', 'CREDIT_CARD', 'cs_1234567891', 'pi_1234567891', 'sub_2345678901', CURRENT_TIMESTAMP - INTERVAL '20 days', CURRENT_TIMESTAMP - INTERVAL '20 days'),
+  ('pay011', 'member003', 'gym001', 79.99, 'FAILED', 'BANK_TRANSFER', 'cs_1234567892', 'pi_1234567892', 'sub_3456789012', CURRENT_TIMESTAMP - INTERVAL '25 days', CURRENT_TIMESTAMP - INTERVAL '25 days'),
+  ('pay012', 'member004', 'gym001', 699.99, 'REFUNDED', 'CREDIT_CARD', 'cs_1234567893', 'pi_1234567893', 'sub_4567890123', CURRENT_TIMESTAMP - INTERVAL '45 days', CURRENT_TIMESTAMP - INTERVAL '45 days'),
+  ('pay013', 'member005', 'gym001', 39.99, 'PENDING', 'ONLINE', 'cs_1234567894', 'pi_1234567894', 'sub_5678901234', CURRENT_TIMESTAMP - INTERVAL '2 days', CURRENT_TIMESTAMP - INTERVAL '2 days');
 
 -- Create Check-ins
 INSERT INTO "CheckIn" (id, "userId", "gymId", "checkInTime", "checkOutTime", "createdAt", "updatedAt")

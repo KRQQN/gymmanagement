@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
@@ -12,7 +14,6 @@ import {
   ChartOptions,
 } from 'chart.js';
 import { format } from 'date-fns';
-import { useSession } from 'next-auth/react';
 
 ChartJS.register(
   CategoryScale,
@@ -24,39 +25,33 @@ ChartJS.register(
   Legend
 );
 
-interface MonthlyRevenue {
+interface RevenueData {
   month: string;
   rawRevenue: number;
   accrualRevenue: number;
 }
 
 export function RevenueGraphs() {
-  const { data: session, status } = useSession();
-  const [revenueData, setRevenueData] = useState<MonthlyRevenue[]>([]);
+  const [revenueData, setRevenueData] = useState<RevenueData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (status === "authenticated" && session?.user?.role === "ADMIN") {
-      fetchRevenueData();
-    }
-  }, [status, session]);
+    fetchRevenueData();
+  }, []);
 
   const fetchRevenueData = async () => {
     try {
-      console.log('Fetching revenue data...');
-      const response = await fetch('/api/cms/revenue-history');
-      console.log('Response status:', response.status);
-      
+      const response = await fetch('/api/dashboard/financial-stats', {
+        credentials: 'include',
+      });
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Error response:', errorData);
         throw new Error(errorData.error || 'Failed to fetch revenue data');
       }
       
       const data = await response.json();
-      console.log('Revenue data:', data);
-      setRevenueData(data);
+      setRevenueData(data.monthlyRevenue);
       setError(null);
     } catch (error) {
       console.error('Error fetching revenue data:', error);
@@ -120,14 +115,14 @@ export function RevenueGraphs() {
     labels,
     datasets: [
       {
-        label: 'Raw Revenue (Payments Received)',
+        label: 'Raw Revenue',
         data: rawRevenueData,
         borderColor: 'rgb(75, 192, 192)',
         backgroundColor: 'rgba(75, 192, 192, 0.5)',
         tension: 0.1,
       },
       {
-        label: 'Accrual Revenue (Revenue Recognized)',
+        label: 'Accrual Revenue',
         data: accrualRevenueData,
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',

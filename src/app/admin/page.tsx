@@ -7,20 +7,12 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { RevenueDisplay } from "@/components/admin/RevenueDisplay";
 import { RevenueGraphs } from "@/components/admin/RevenueGraphs";
-
-interface Stats {
-  totalMembers: number;
-  newMembers: number;
-  activeMembers: number;
-  todayCheckIns: number;
-  rawRevenue: number;
-  accrualRevenue: number;
-}
+import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [stats, setStats] = useState<Stats | null>(null);
+  const { totalMembers, newMembers, activeMembers, todayCheckIns, rawRevenue, accrualRevenue, memberships, isLoading, error } = useDashboardStats();
 
   useEffect(() => {
     if (status === "unauthenticated" || (status === "authenticated" && session?.user?.role !== "ADMIN")) {
@@ -28,26 +20,21 @@ export default function AdminDashboard() {
     }
   }, [status, session, router]);
 
-  useEffect(() => {
-    async function fetchStats() {
-      try {
-        const response = await fetch("/api/cms/stats");
-        const data = await response.json();
-        setStats(data);
-      } catch (error) {
-        console.error("Error fetching stats:", error);
-      }
-    }
-
-    if (session?.user?.role === "ADMIN") {
-      fetchStats();
-    }
-  }, [session]);
-
-  if (status === "loading") {
+  if (status === "loading" || isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto py-8">
+        <div className="p-6 bg-destructive/10 text-destructive rounded-lg">
+          <h2 className="text-lg font-semibold mb-2">Error</h2>
+          <p>{error}</p>
+        </div>
       </div>
     );
   }
@@ -61,27 +48,25 @@ export default function AdminDashboard() {
         </p>
       </div>
 
-      {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="p-6 bg-card rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-2">Total Members</h3>
-            <p className="text-3xl font-bold">{stats.totalMembers}</p>
-          </div>
-          <div className="p-6 bg-card rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-2">Active Members</h3>
-            <p className="text-3xl font-bold">{stats.activeMembers}</p>
-          </div>
-          <div className="p-6 bg-card rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-2">Today's Check-ins</h3>
-            <p className="text-3xl font-bold">{stats.todayCheckIns}</p>
-          </div>
-          <div className="p-6 bg-card rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-2">New Members</h3>
-            <p className="text-3xl font-bold">{stats.newMembers}</p>
-            <p className="text-sm text-muted-foreground">This month</p>
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="p-6 bg-card rounded-lg shadow">
+          <h3 className="text-lg font-semibold mb-2">Total Members</h3>
+          <p className="text-3xl font-bold">{totalMembers}</p>
         </div>
-      )}
+        <div className="p-6 bg-card rounded-lg shadow">
+          <h3 className="text-lg font-semibold mb-2">Active Members</h3>
+          <p className="text-3xl font-bold">{activeMembers}</p>
+        </div>
+        <div className="p-6 bg-card rounded-lg shadow">
+          <h3 className="text-lg font-semibold mb-2">Today's Check-ins</h3>
+          <p className="text-3xl font-bold">{todayCheckIns}</p>
+        </div>
+        <div className="p-6 bg-card rounded-lg shadow">
+          <h3 className="text-lg font-semibold mb-2">New Members</h3>
+          <p className="text-3xl font-bold">{newMembers}</p>
+          <p className="text-sm text-muted-foreground">This month</p>
+        </div>
+      </div>
 
       <div className="mb-8">
         <RevenueDisplay />

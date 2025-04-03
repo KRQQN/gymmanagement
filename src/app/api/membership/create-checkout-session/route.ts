@@ -49,12 +49,15 @@ export async function POST(req: Request) {
               name: plan.name,
               description: plan.description,
             },
-            unit_amount: plan.price * 100, // Convert to cents
+            unit_amount: Math.round(plan.price * 100), // Convert to cents and ensure it's an integer
+            recurring: {
+              interval: "month",
+            },
           },
           quantity: 1,
         },
       ],
-      mode: "payment",
+      mode: "subscription",
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/membership/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/membership`,
       metadata: {

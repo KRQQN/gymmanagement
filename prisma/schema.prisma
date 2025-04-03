@@ -116,6 +116,8 @@ model Membership {
   type          MembershipType
   status        MembershipStatus @default(ACTIVE)
   price         Float
+  stripeSubscriptionId String?
+  stripeCustomerId String?
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
 
@@ -150,6 +152,8 @@ model Payment {
   status        PaymentStatus
   paymentMethod PaymentMethod
   stripeSessionId String?     @unique
+  stripePaymentIntentId String?
+  stripeSubscriptionId String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 

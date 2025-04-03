@@ -1,43 +1,150 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { getUserGymId } from "@/lib/utils";
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
-    const classes = await prisma.gymClass.findMany();
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const gymId = await getUserGymId(session.user.id);
+
+    const classes = await prisma.gymClass.findMany({
+      where: {
+        gymId,
+      },
+      include: {
+        attendees: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
     return NextResponse.json(classes);
   } catch (error) {
-    console.error("Error fetching classes:", error);
-    return NextResponse.json({ error: "Failed to fetch classes" }, { status: 500 });
+    console.error("[CLASSES_GET]", error);
+    return new NextResponse("Internal error", { status: 500 });
   }
 }
 
-export async function POST(request: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
+export async function POST(req: Request) {
   try {
-    const data = await request.json();
-    const classData = await prisma.gymClass.create({
+    const session = await getServerSession(authOptions);
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const gymId = await getUserGymId(session.user.id);
+
+    const body = await req.json();
+    const {
+      name,
+      description,
+      schedule,
+      duration,
+      capacity,
+      category,
+      difficulty,
+      equipment,
+      requirements,
+      instructor,
+    } = body;
+
+    if (!name || !description || !schedule || !duration || !capacity) {
+      return new NextResponse("Missing required fields", { status: 400 });
+    }
+
+    const gymClass = await prisma.gymClass.create({
       data: {
-        ...data,
-        schedule: data.schedule,
+        name,
+        description,
+        schedule,
+        duration,
+        capacity,
+        category,
+        difficulty,
+        equipment: equipment || [],
+        requirements: requirements || [],
+        instructor,
+        gymId,
       },
-      
     });
 
-    return NextResponse.json(classData);
+    return NextResponse.json(gymClass);
   } catch (error) {
-    console.error("Error creating class:", error);
-    return NextResponse.json({ error: "Failed to create class" }, { status: 500 });
+    console.error("[CLASSES_POST]", error);
+    return new NextResponse("Internal error", { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const gymId = await getUserGymId(session.user.id);
+
+    const body = await req.json();
+    const { classId, ...updateData } = body;
+
+    if (!classId) {
+      return new NextResponse("Missing class ID", { status: 400 });
+    }
+
+    const gymClass = await prisma.gymClass.update({
+      where: {
+        id: classId,
+        gymId,
+      },
+      data: updateData,
+    });
+
+    return NextResponse.json(gymClass);
+  } catch (error) {
+    console.error("[CLASSES_PATCH]", error);
+    return new NextResponse("Internal error", { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const gymId = await getUserGymId(session.user.id);
+
+    const { searchParams } = new URL(req.url);
+    const classId = searchParams.get("classId");
+
+    if (!classId) {
+      return new NextResponse("Missing class ID", { status: 400 });
+    }
+
+    await prisma.gymClass.delete({
+      where: {
+        id: classId,
+        gymId,
+      },
+    });
+
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    console.error("[CLASSES_DELETE]", error);
+    return new NextResponse("Internal error", { status: 500 });
   }
 } 

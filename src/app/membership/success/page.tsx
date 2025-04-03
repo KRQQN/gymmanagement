@@ -1,70 +1,80 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { Loader2 } from "lucide-react";
 
 export default function MembershipSuccess() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const [error, setError] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(true);
 
   useEffect(() => {
-    async function handleSuccess() {
-      const sessionId = searchParams.get("session_id");
-
-      if (!sessionId) {
-        toast({
-          title: "Error",
-          description: "Invalid session",
-          variant: "destructive",
-        });
-        router.push("/membership");
-        return;
-      }
-
+    async function processSubscription() {
       try {
-        const response = await fetch("/api/membership/subscribe", {
+        const sessionId = searchParams.get("session_id");
+        if (!sessionId) {
+          throw new Error("No session ID provided");
+        }
+
+        // Call the API to process the subscription
+        const response = await fetch("/api/membership/process-subscription", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            sessionId,
-          }),
+          body: JSON.stringify({ sessionId }),
         });
 
         if (!response.ok) {
-          throw new Error("Failed to process payment");
+          const error = await response.json();
+          throw new Error(error.message || "Failed to process subscription");
         }
 
-        toast({
-          title: "Success",
-          description: "Your membership has been activated",
-        });
-
-        router.push("/dashboard/membership");
+        // Redirect to dashboard after successful processing
+        router.push("/dashboard");
       } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to process payment",
-          variant: "destructive",
-        });
-        router.push("/membership");
+        console.error("Error processing subscription:", error);
+        setError(error instanceof Error ? error.message : "Failed to process subscription");
       } finally {
-        setIsLoading(false);
+        setIsProcessing(false);
       }
     }
 
-    handleSuccess();
-  }, [router, searchParams, toast]);
+    if (status === "authenticated" && session?.user) {
+      processSubscription();
+    }
+  }, [searchParams, router, status, session]);
 
-  if (isLoading) {
+  if (status === "loading" || isProcessing) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-lg">Processing your subscription...</p>
+          <p className="text-sm text-muted-foreground">Please wait while we set up your membership.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-4 p-6 bg-destructive/10 rounded-lg">
+          <h1 className="text-2xl font-bold text-destructive">Error</h1>
+          <p className="text-center">{error}</p>
+          <button
+            onClick={() => router.push("/membership")}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          >
+            Return to Membership
+          </button>
+        </div>
       </div>
     );
   }

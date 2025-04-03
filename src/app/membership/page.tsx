@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { MembershipSignUp } from "@/components/membership/MembershipSignUp";
 
 interface Plan {
   id: string;
@@ -20,6 +21,7 @@ export default function MembershipPlans() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [plans, setPlans] = useState<Plan[]>([]);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
 
   useEffect(() => {
     async function fetchPlans() {
@@ -44,36 +46,35 @@ export default function MembershipPlans() {
     fetchPlans();
   }, [toast]);
 
-  async function handleSelectPlan(planId: string) {
+  async function handleSelectPlan(plan: Plan) {
     if (!session) {
-      router.push("/auth/signin");
-      return;
-    }
+      setSelectedPlan(plan);
+    } else {
+      try {
+        const response = await fetch("/api/membership/create-checkout-session", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            planId: plan.id,
+          }),
+        });
 
-    try {
-      const response = await fetch("/api/membership/create-checkout-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          planId,
-        }),
-      });
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.message || "Failed to create checkout session");
+        }
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || "Failed to create checkout session");
+        const { url } = await response.json();
+        window.location.href = url;
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: error instanceof Error ? error.message : "Failed to create checkout session",
+          variant: "destructive",
+        });
       }
-
-      const { url } = await response.json();
-      window.location.href = url;
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to create checkout session",
-        variant: "destructive",
-      });
     }
   }
 
@@ -82,6 +83,16 @@ export default function MembershipPlans() {
       <div className="flex h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
+    );
+  }
+
+  if (selectedPlan) {
+    return (
+      <MembershipSignUp
+        planId={selectedPlan.id}
+        planName={selectedPlan.name}
+        planPrice={selectedPlan.price}
+      />
     );
   }
 
@@ -137,7 +148,7 @@ export default function MembershipPlans() {
 
               <Button
                 className="w-full"
-                onClick={() => handleSelectPlan(plan.id)}
+                onClick={() => handleSelectPlan(plan)}
               >
                 Select Plan
               </Button>
