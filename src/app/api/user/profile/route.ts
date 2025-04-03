@@ -36,7 +36,7 @@ export async function PUT(req: Request) {
     // If trying to change password
     if (currentPassword && newPassword) {
       // Verify current password
-      const isValid = await compare(currentPassword, user.password);
+      const isValid = await compare(currentPassword, user.password!);
 
       if (!isValid) {
         return NextResponse.json(

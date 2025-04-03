@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export async function POST(req: Request) {
   try {
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashedPassword,
-      },
+      } as Prisma.UserUncheckedCreateInput,
     });
 
     return NextResponse.json(

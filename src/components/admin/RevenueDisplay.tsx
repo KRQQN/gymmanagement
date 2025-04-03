@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
 
 interface RevenueData {
   monthlyRevenue: Array<{
@@ -34,7 +33,7 @@ export function RevenueDisplay() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('/api/dashboard/financial-stats', {
+      const response = await fetch('/api/admin/financial-stats', {
         credentials: 'include',
       });
       if (!response.ok) throw new Error('Failed to fetch revenue data');
@@ -56,7 +55,7 @@ export function RevenueDisplay() {
   }
 
   // Get current month's revenue
-  const currentMonth = revenueData.monthlyRevenue[5]; // Index 5 is the current month
+  const currentMonth = revenueData.monthlyRevenue[5];
   const rawRevenue = currentMonth?.rawRevenue || 0;
   const accrualRevenue = currentMonth?.accrualRevenue || 0;
 

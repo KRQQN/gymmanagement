@@ -42,7 +42,7 @@ export function RevenueGraphs() {
 
   const fetchRevenueData = async () => {
     try {
-      const response = await fetch('/api/dashboard/financial-stats', {
+      const response = await fetch('/api/admin/financial-stats', {
         credentials: 'include',
       });
       if (!response.ok) {

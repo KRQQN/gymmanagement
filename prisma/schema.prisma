@@ -71,8 +71,8 @@ model User {
   updatedAt     DateTime  @updatedAt
 
   // Relations
-  gym           Gym       @relation(fields: [gymId], references: [id])
-  gymId         String
+  gym           Gym?      @relation(fields: [gymId], references: [id])
+  gymId         String?
   accounts      Account[]
   sessions      Session[]
   membership    Membership?

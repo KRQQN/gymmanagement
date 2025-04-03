@@ -30,7 +30,7 @@ export function useDashboardStats(): DashboardStats {
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch("/api/dashboard/stats", {
+        const response = await fetch("/api/admin/stats", {
           credentials: "include",
         });
 

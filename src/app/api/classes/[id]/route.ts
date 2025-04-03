@@ -15,13 +15,6 @@ export async function GET(
   try {
     const cls = await prisma.gymClass.findUnique({
       where: { id: params.id },
-      include: {
-        instructor: {
-          select: {
-            name: true,
-          },
-        },
-      },
     });
 
     if (!cls) {
@@ -51,13 +44,6 @@ export async function PUT(
       data: {
         ...data,
         schedule: data.schedule,
-      },
-      include: {
-        instructor: {
-          select: {
-            name: true,
-          },
-        },
       },
     });
 

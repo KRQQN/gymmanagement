@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
@@ -42,7 +42,7 @@ export default function AdminMembers() {
           throw new Error("Failed to fetch members");
         }
         const data = await response.json();
-        setMembers(data.members);
+        setMembers(data);
       } catch (error) {
         toast({
           title: "Error",
@@ -59,10 +59,13 @@ export default function AdminMembers() {
     }
   }, [status, session, toast]);
 
-  const filteredMembers = members.filter((member) =>
-    member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    member.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredMembers = useMemo(() => {
+    if (!members) return [];
+    return members.filter((member) =>
+      member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [members, searchQuery]);
 
   if (status === "loading" || isLoading) {
     return (
