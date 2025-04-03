@@ -98,8 +98,7 @@ export async function POST(req: Request) {
           amount: plan.price,
           status: "COMPLETED",
           paymentMethod: "ONLINE",
-          stripeSessionId: sessionId,
-          gymId: session.user.gymId,
+          gymId: plan.gymId,
         },
       });
 

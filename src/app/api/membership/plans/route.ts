@@ -3,14 +3,8 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
-    console.log("Testing database connection...");
-    
-    // Test connection with a simple query first
-    await prisma.$queryRaw`SELECT 1`;
-    console.log("Database connection successful");
 
-    console.log("Fetching membership plans...");
-    // Get all active membership plans
+
     const plans = await prisma.membershipPlan.findMany({
       where: {
         isActive: true,

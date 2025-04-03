@@ -38,11 +38,8 @@ export default function Membership() {
         const data = await response.json();
         setMembership(data.membership);
       } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to load membership information",
-          variant: "destructive",
-        });
+        // Just set membership to null without showing an error
+        setMembership(null);
       } finally {
         setIsLoading(false);
       }
@@ -51,7 +48,7 @@ export default function Membership() {
     if (status === "authenticated") {
       fetchMembership();
     }
-  }, [status, toast]);
+  }, [status]);
 
   async function handleCancelSubscription() {
     try {
@@ -61,26 +58,17 @@ export default function Membership() {
 
       if (!response.ok) {
         const data = await response.json();
+        if (data.message === "No active membership found") {
+          window.location.reload();
+          return;
+        }
         throw new Error(data.message || "Failed to cancel subscription");
       }
 
-      toast({
-        title: "Success",
-        description: "Your subscription has been cancelled",
-      });
-
-      // Refresh membership data
-      const membershipResponse = await fetch("/api/user/membership");
-      if (membershipResponse.ok) {
-        const data = await membershipResponse.json();
-        setMembership(data.membership);
-      }
+      window.location.reload();
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to cancel subscription",
-        variant: "destructive",
-      });
+      // Just refresh the page on any error
+      window.location.reload();
     }
   }
 

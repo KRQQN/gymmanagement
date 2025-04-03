@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -18,6 +18,7 @@ interface Plan {
 export default function MembershipPlans() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -45,6 +46,16 @@ export default function MembershipPlans() {
 
     fetchPlans();
   }, [toast]);
+
+  useEffect(() => {
+    const planId = searchParams.get("planId");
+    if (planId && plans.length > 0) {
+      const plan = plans.find((p) => p.id === planId);
+      if (plan) {
+        setSelectedPlan(plan);
+      }
+    }
+  }, [searchParams, plans]);
 
   async function handleSelectPlan(plan: Plan) {
     if (!session) {
@@ -86,7 +97,7 @@ export default function MembershipPlans() {
     );
   }
 
-  if (selectedPlan) {
+  if (selectedPlan && !session) {
     return (
       <MembershipSignUp
         planId={selectedPlan.id}

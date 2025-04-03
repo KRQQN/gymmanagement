@@ -8,17 +8,31 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.id) {
+    if (!session?.user?.email) {
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
+    // Get user by email
+    const user = await prisma.user.findUnique({
+      where: {
+        email: session.user.email,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { message: "User not found" },
+        { status: 404 }
+      );
+    }
+
     // Get user's active membership
     const membership = await prisma.membership.findFirst({
       where: {
-        userId: session.user.id,
+        userId: user.id,
         status: MembershipStatus.ACTIVE,
         endDate: {
           gte: new Date(),

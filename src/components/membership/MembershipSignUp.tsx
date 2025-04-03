@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -15,18 +15,30 @@ interface MembershipSignUpProps {
 
 export function MembershipSignUp({ planId, planName, planPrice }: MembershipSignUpProps) {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    console.log("Auth status changed:", status);
+    console.log("Current planId:", planId);
+    
+    if (status === "authenticated") {
+      console.log("User authenticated, redirecting to checkout...");
+      const checkoutUrl = `/membership/checkout?planId=${planId}`;
+      console.log("Redirect URL:", checkoutUrl);
+      router.push(checkoutUrl);
+    }
+  }, [status, planId, router]);
 
   const handleSocialSignIn = async (provider: string) => {
     setIsLoading(true);
     try {
       const result = await signIn(provider, {
         redirect: false,
-        callbackUrl: `/membership/success?planId=${planId}`,
+        callbackUrl: `/membership/checkout?planId=${planId}`,
       });
-
+      
       if (result?.error) {
         toast({
           title: "Error",
@@ -58,9 +70,9 @@ export function MembershipSignUp({ planId, planName, planPrice }: MembershipSign
         email,
         password,
         redirect: false,
-        callbackUrl: `/membership/success?planId=${planId}`,
+        callbackUrl: `/membership/checkout?planId=${planId}`,
       });
-
+      
       if (result?.error) {
         toast({
           title: "Error",
