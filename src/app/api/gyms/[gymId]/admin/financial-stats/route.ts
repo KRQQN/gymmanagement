@@ -14,6 +14,10 @@ export async function GET() {
 
     const gymId = await getUserGymId(session.user.id);
 
+    if (!gymId) {
+      return new NextResponse("Gym ID is required", { status: 400 });
+    }
+
     // Get data for the last 6 months and next 6 months
     const months = [];
     const now = new Date();

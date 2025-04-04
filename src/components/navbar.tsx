@@ -29,9 +29,9 @@ export function Navbar() {
               Classes
             </Button>
           </Link>
-          <Link href="/membership">
+          <Link href="/memberships">
             <Button variant="ghost" className="text-gray-200 hover:text-white hover:bg-secondary">
-              Membership
+              Memberships
             </Button>
           </Link>
           {session ? (

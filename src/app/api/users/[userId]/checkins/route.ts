@@ -30,7 +30,9 @@ export async function GET() {
         id: checkIn.id,
         date: checkIn.createdAt.toISOString().split("T")[0],
         time: checkIn.createdAt.toLocaleTimeString(),
-        duration: checkIn.duration,
+        duration: checkIn.checkOutTime 
+          ? Math.round((checkIn.checkOutTime.getTime() - checkIn.checkInTime.getTime()) / 1000 / 60)
+          : null,
       })),
     });
   } catch (error) {

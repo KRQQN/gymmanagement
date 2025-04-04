@@ -31,7 +31,7 @@ export default function Membership() {
   useEffect(() => {
     async function fetchMembership() {
       try {
-        const response = await fetch("/api/user/membership");
+        const response = await fetch("/api/users/memberships");
         if (!response.ok) {
           throw new Error("Failed to fetch membership");
         }
@@ -52,7 +52,7 @@ export default function Membership() {
 
   async function handleCancelSubscription() {
     try {
-      const response = await fetch("/api/membership/cancel", {
+      const response = await fetch("/api/memberships/cancellation", {
         method: "POST",
       });
 
@@ -125,7 +125,7 @@ export default function Membership() {
 
               <div className="flex gap-4 pt-4">
                 <Button asChild>
-                  <a href="/dashboard/membership/payment">Make Payment</a>
+                  <a href="/dashboard/memberships/payment">Make Payment</a>
                 </Button>
                 {membership.status === "ACTIVE" && (
                   <Button 
@@ -146,7 +146,7 @@ export default function Membership() {
                 You don't have an active membership. Choose a plan to get started.
               </p>
               <Button className="mt-4" asChild>
-                <a href="/membership">View Plans</a>
+                <a href="/memberships">View Plans</a>
               </Button>
             </div>
           </div>

@@ -25,7 +25,7 @@ export function MembershipSignUp({ planId, planName, planPrice }: MembershipSign
     
     if (status === "authenticated") {
       console.log("User authenticated, redirecting to checkout...");
-      const checkoutUrl = `/membership/checkout?planId=${planId}`;
+      const checkoutUrl = `/memberships/checkout?planId=${planId}`;
       console.log("Redirect URL:", checkoutUrl);
       router.push(checkoutUrl);
     }
@@ -36,7 +36,7 @@ export function MembershipSignUp({ planId, planName, planPrice }: MembershipSign
     try {
       const result = await signIn(provider, {
         redirect: false,
-        callbackUrl: `/membership/checkout?planId=${planId}`,
+        callbackUrl: `/memberships/checkout?planId=${planId}`,
       });
       
       if (result?.error) {
@@ -70,7 +70,7 @@ export function MembershipSignUp({ planId, planName, planPrice }: MembershipSign
         email,
         password,
         redirect: false,
-        callbackUrl: `/membership/checkout?planId=${planId}`,
+        callbackUrl: `/memberships/checkout?planId=${planId}`,
       });
       
       if (result?.error) {

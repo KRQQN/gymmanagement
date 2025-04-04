@@ -27,7 +27,7 @@ export default function MembershipPlans() {
   useEffect(() => {
     async function fetchPlans() {
       try {
-        const response = await fetch("/api/membership/plans");
+        const response = await fetch("/api/memberships/plans");
         if (!response.ok) {
           throw new Error("Failed to fetch plans");
         }
@@ -62,7 +62,7 @@ export default function MembershipPlans() {
       setSelectedPlan(plan);
     } else {
       try {
-        const response = await fetch("/api/membership/create-checkout-session", {
+        const response = await fetch("/api/memberships/checkout", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

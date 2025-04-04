@@ -26,13 +26,13 @@ export default function CheckoutPage() {
   useEffect(() => {
     const planId = searchParams.get("planId");
     if (!planId) {
-      router.push("/membership");
+      router.push("/memberships");
       return;
     }
 
     async function fetchPlan() {
       try {
-        const response = await fetch(`/api/membership/plans/${planId}`);
+        const response = await fetch(`/api/memberships/plans/${planId}`);
         if (!response.ok) {
           throw new Error("Failed to fetch plan");
         }
@@ -44,7 +44,7 @@ export default function CheckoutPage() {
           description: "Failed to load membership plan",
           variant: "destructive",
         });
-        router.push("/membership");
+        router.push("/memberships");
       }
     }
 
@@ -56,7 +56,7 @@ export default function CheckoutPage() {
     
     setIsLoading(true);
     try {
-      const response = await fetch("/api/membership/create-checkout-session", {
+      const response = await fetch("/api/memberships/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

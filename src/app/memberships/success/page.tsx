@@ -22,7 +22,7 @@ export default function MembershipSuccess() {
         }
 
         // Call the API to process the subscription
-        const response = await fetch("/api/membership/process-subscription", {
+        const response = await fetch("/api/memberships/subscription", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

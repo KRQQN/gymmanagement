@@ -4,14 +4,15 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getUserGymId } from "@/lib/utils";
 
-export async function GET() {
+export async function GET({ params }: { params: { gymId: string } }) {
+  const { gymId } = params;
+
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const gymId = await getUserGymId(session.user.id);
 
     const classes = await prisma.gymClass.findMany({
       where: {
@@ -23,6 +24,7 @@ export async function GET() {
             id: true,
             name: true,
             email: true,
+            gymId: true,
           },
         },
       },
