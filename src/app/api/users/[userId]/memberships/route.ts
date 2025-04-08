@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
-import { MembershipStatus } from "@prisma/client";
 
 export async function GET() {
   try {
@@ -33,7 +32,6 @@ export async function GET() {
     const membership = await prisma.membership.findFirst({
       where: {
         userId: user.id,
-        status: MembershipStatus.ACTIVE,
         endDate: {
           gte: new Date(),
         },

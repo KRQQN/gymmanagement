@@ -2,12 +2,13 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ClassService, type Class } from "@/lib/services/class.service";
 
-export default function ClassesPage() {
+export default function ClassesPage({ params }: { params: Promise<{ gymId: string }> }) {
+  const { gymId } = use(params);
   const { data: session, status } = useSession();
   const router = useRouter();
   const { toast } = useToast();
@@ -15,8 +16,7 @@ export default function ClassesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("Session status:", status);
-    console.log("Session data:", session);
+    
 
     if (status === "unauthenticated") {
       console.log("Redirecting to sign in...");
@@ -26,9 +26,7 @@ export default function ClassesPage() {
 
     const fetchClasses = async () => {
       try {
-        console.log("Fetching classes...");
-        const fetchedClasses = await ClassService.getAllClasses();
-        console.log("Fetched classes:", fetchedClasses);
+        const fetchedClasses = await ClassService.getAllClasses(gymId);
         setClasses(fetchedClasses);
       } catch (error) {
         console.error("Error fetching classes:", error);
@@ -57,6 +55,15 @@ export default function ClassesPage() {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+  
+
+  if  (classes.length < 1) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <h1 className="text-3xl font-bold">No classes found for {gymId}</h1>
       </div>
     );
   }

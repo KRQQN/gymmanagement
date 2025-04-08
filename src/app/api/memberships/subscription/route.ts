@@ -74,7 +74,7 @@ export async function POST(req: Request) {
           email: session.user.email!,
           name: session.user.name || "",
           role: "MEMBER",
-          gymId: "1", // Default gym ID, you might want to make this configurable
+          gymId: session.user.gymId, 
         },
       });
     }

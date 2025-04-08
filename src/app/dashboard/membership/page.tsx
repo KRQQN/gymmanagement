@@ -18,10 +18,9 @@ interface Membership {
 export default function Membership() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [membership, setMembership] = useState<Membership | null>(null);
-
+  
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/auth/signin");
@@ -31,14 +30,13 @@ export default function Membership() {
   useEffect(() => {
     async function fetchMembership() {
       try {
-        const response = await fetch("/api/users/memberships");
+        const response = await fetch(`/api/users/${session?.user?.id}/memberships`);
         if (!response.ok) {
           throw new Error("Failed to fetch membership");
         }
         const data = await response.json();
         setMembership(data.membership);
       } catch (error) {
-        // Just set membership to null without showing an error
         setMembership(null);
       } finally {
         setIsLoading(false);
@@ -52,7 +50,7 @@ export default function Membership() {
 
   async function handleCancelSubscription() {
     try {
-      const response = await fetch("/api/memberships/cancellation", {
+      const response = await fetch(`/api/memberships/cancellation`, {
         method: "POST",
       });
 
@@ -67,7 +65,7 @@ export default function Membership() {
 
       window.location.reload();
     } catch (error) {
-      // Just refresh the page on any error
+      console.log(error)
       window.location.reload();
     }
   }
@@ -146,7 +144,7 @@ export default function Membership() {
                 You don't have an active membership. Choose a plan to get started.
               </p>
               <Button className="mt-4" asChild>
-                <a href="/memberships">View Plans</a>
+                <a href="/gyms">View Plans</a>
               </Button>
             </div>
           </div>

@@ -1,43 +1,26 @@
-"use client";
-
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { RevenueDisplay } from "@/components/admin/RevenueDisplay";
-import { RevenueGraphs } from "@/components/admin/RevenueGraphs";
-import { useDashboardStats } from "@/hooks/use-dashboard-stats";
+import { RevenueSectionClient } from "@/components/admin/RevenueSectionClient";
 
-export default function AdminDashboard() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const { totalMembers, newMembers, activeMembers, todayCheckIns, rawRevenue, accrualRevenue, memberships, isLoading, error } = useDashboardStats();
+interface AdminDashboardProps {
+  data: {
+    totalMembers: number;
+    newMembers: number;
+    activeMembers: number;
+    todayCheckIns: number;
+    rawRevenue: number;
+    accrualRevenue: number;
+    memberships: Array<{
+      planName: string;
+      count: number;
+      totalRevenue: number;
+      monthlyRevenue: number;
+    }>;
+  };
+}
 
-  useEffect(() => {
-    if (status === "unauthenticated" || (status === "authenticated" && session?.user?.role !== "ADMIN")) {
-      router.push("/auth/signin");
-    }
-  }, [status, session, router]);
-
-  if (status === "loading" || isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto py-8">
-        <div className="p-6 bg-destructive/10 text-destructive rounded-lg">
-          <h2 className="text-lg font-semibold mb-2">Error</h2>
-          <p>{error}</p>
-        </div>
-      </div>
-    );
-  }
+export function AdminDashboard({ data }: AdminDashboardProps) {
+  const { totalMembers, newMembers, activeMembers, todayCheckIns, memberships } = data;
 
   return (
     <div className="container mx-auto py-8">
@@ -68,13 +51,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div className="mb-8">
-        <RevenueDisplay />
-      </div>
-
-      <div className="mb-8">
-        <RevenueGraphs />
-      </div>
+      <RevenueSectionClient />
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-lg border bg-card p-6">

@@ -1,5 +1,6 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
 interface DashboardStats {
@@ -24,13 +25,14 @@ export function useDashboardStats(): DashboardStats {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch("/api/admin/stats", {
+        const response = await fetch(`/api/gyms/${"gym001"}/admin/stats`, {
           credentials: "include",
         });
 

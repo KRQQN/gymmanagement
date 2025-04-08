@@ -24,12 +24,12 @@ export function Navbar() {
           &lt;your gym&gt;
         </Link>
         <div className="ml-auto flex items-center space-x-4">
-          <Link href="/classes">
+          <Link href="/gyms?type=classes">
             <Button variant="ghost" className="text-gray-200 hover:text-white hover:bg-secondary">
               Classes
             </Button>
           </Link>
-          <Link href="/memberships">
+          <Link href="/gyms?type=memberships">
             <Button variant="ghost" className="text-gray-200 hover:text-white hover:bg-secondary">
               Memberships
             </Button>

@@ -21,8 +21,8 @@ export interface Class {
 }
 
 export class ClassService {
-  static async getAllClasses(): Promise<Class[]> {
-    const response = await fetch("/api/classes");
+  static async getAllClasses(gymId: string): Promise<Class[]> {
+    const response = await fetch(`/api/gyms/${gymId}/classes`);
     if (response.status === 401) {
       throw new Error("Unauthorized");
     }

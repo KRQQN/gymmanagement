@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { MembershipSignUp } from "@/components/membership/MembershipSignUp";
+import { use } from "react";
 
 interface Plan {
   id: string;
@@ -15,9 +16,9 @@ interface Plan {
   features: string[];
 }
 
-export default function MembershipPlans() {
+export default function MembershipPlans({ params }: { params: Promise<{ gymId: string }> }) {
+  const { gymId } = use(params);
   const { data: session, status } = useSession();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
@@ -27,7 +28,7 @@ export default function MembershipPlans() {
   useEffect(() => {
     async function fetchPlans() {
       try {
-        const response = await fetch("/api/memberships/plans");
+        const response = await fetch(`/api/gyms/${gymId}/plans`);
         if (!response.ok) {
           throw new Error("Failed to fetch plans");
         }
@@ -93,6 +94,14 @@ export default function MembershipPlans() {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (plans.length < 1) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <h1 className="text-3xl font-bold">No membership plans found for {gymId}</h1>
       </div>
     );
   }

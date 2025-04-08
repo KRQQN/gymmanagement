@@ -32,6 +32,7 @@ export const authOptions: NextAuthOptions = {
           email: profile.email,
           image: profile.picture,
           role: "MEMBER",
+          gymId: null, // Will be set in signIn callback
         };
       },
     }),
@@ -70,6 +71,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
+          gymId: user.gymId,
         };
       },
     }),
@@ -78,91 +80,40 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile }) {
       try {
         if (account?.provider === "google") {
-          console.log("Google sign in attempt:", { user, account, profile });
-          
-          if (!user.email) {
-            console.error("No email provided by Google");
-            return false;
+          // Get the default gym (assuming you have one)
+          const defaultGym = await prisma.gym.findFirst({
+            where: { isActive: true },
+          });
+
+          if (!defaultGym) {
+            throw new Error("No active gym found");
           }
 
           // Check if user exists
           const existingUser = await prisma.user.findUnique({
-            where: { email: user.email },
-            include: {
-              accounts: true,
-            },
+            where: { email: user.email! },
           });
 
           if (existingUser) {
-            console.log("Existing user found:", existingUser);
-            // Check if Google account is already linked
-            const hasGoogleAccount = existingUser.accounts?.some(
-              (acc) => acc.provider === "google"
-            );
-
-            if (!hasGoogleAccount) {
-              console.log("Linking Google account to existing user");
-              try {
-                await prisma.account.create({
-                  data: {
-                    userId: existingUser.id,
-                    type: account.type,
-                    provider: account.provider,
-                    providerAccountId: account.providerAccountId,
-                    access_token: account.access_token,
-                    token_type: account.token_type,
-                    scope: account.scope,
-                    id_token: account.id_token,
-                  },
-                });
-                console.log("Successfully linked Google account");
-              } catch (error) {
-                console.error("Error linking Google account:", error);
-                return false;
-              }
+            // Update user's gymId if not set
+            if (!existingUser.gymId) {
+              await prisma.user.update({
+                where: { id: existingUser.id },
+                data: { gymId: defaultGym.id },
+              });
             }
+            (user as any).gymId = existingUser.gymId || defaultGym.id;
           } else {
-            console.log("Creating new user with Google account");
-            try {
-              // Get the default gym (assuming you have one)
-              const defaultGym = await prisma.gym.findFirst({
-                where: { isActive: true },
-              });
-
-              if (!defaultGym) {
-                console.error("No active gym found");
-                return false;
-              }
-
-              // Create new user
-              const newUser = await prisma.user.create({
-                data: {
-                  email: user.email,
-                  name: user.name || "User",
-                  role: "MEMBER",
-                  gymId: defaultGym.id,
-                },
-              });
-              console.log("Created new user:", newUser);
-
-              // Create account link
-              await prisma.account.create({
-                data: {
-                  userId: newUser.id,
-                  type: account.type,
-                  provider: account.provider,
-                  providerAccountId: account.providerAccountId,
-                  access_token: account.access_token,
-                  token_type: account.token_type,
-                  scope: account.scope,
-                  id_token: account.id_token,
-                },
-              });
-              console.log("Created account link");
-            } catch (error) {
-              console.error("Error creating new user or account:", error);
-              return false;
-            }
+            // Create new user with default gym
+            const newUser = await prisma.user.create({
+              data: {
+                email: user.email!,
+                name: user.name || "User",
+                role: "MEMBER",
+                gymId: defaultGym.id,
+              },
+            });
+            (user as any).gymId = newUser.gymId;
           }
         }
         return true;
@@ -177,14 +128,15 @@ export const authOptions: NextAuthOptions = {
         session.user.name = token.name as string;
         session.user.email = token.email as string;
         session.user.role = token.role as UserRole;
+        session.user.gymId = token.gymId as string;
       }
       return session;
     },
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
-        // Type assertion since we know our User type has role property
         token.role = (user as any).role;
+        token.gymId = (user as any).gymId;
       }
       if (account) {
         token.accessToken = account.access_token;

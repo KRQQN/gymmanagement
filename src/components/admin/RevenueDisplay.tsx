@@ -1,5 +1,7 @@
 "use client";
 
+import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 interface RevenueData {
@@ -23,9 +25,11 @@ interface RevenueData {
   }>;
 }
 
-export function RevenueDisplay() {
+export function RevenueDisplay( ) {
   const [revenueData, setRevenueData] = useState<RevenueData | null>(null);
   const [loading, setLoading] = useState(true);
+  const { data: session, status } = useSession();
+  const gymId = "gym001"
 
   useEffect(() => {
     fetchData();
@@ -33,7 +37,7 @@ export function RevenueDisplay() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('/api/admin/financial-stats', {
+      const response = await fetch(`/api/gyms/${gymId}/admin/financial-stats`, {
         credentials: 'include',
       });
       if (!response.ok) throw new Error('Failed to fetch revenue data');

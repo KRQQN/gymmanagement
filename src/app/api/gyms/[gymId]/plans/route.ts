@@ -1,20 +1,22 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(
+  request: Request,
+  { params }: { params: { gymId: string } }
+) {
   try {
-
+    const { gymId } = params;
 
     const plans = await prisma.membershipPlan.findMany({
       where: {
-        isActive: true,
+        gymId: gymId,
       },
       orderBy: {
         price: "asc",
       },
     });
 
-    console.log("Found plans:", plans);
 
     return NextResponse.json({
       plans: plans.map((plan) => ({

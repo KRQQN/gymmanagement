@@ -14,6 +14,8 @@ import {
   ChartOptions,
 } from 'chart.js';
 import { format } from 'date-fns';
+import { useParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 ChartJS.register(
   CategoryScale,
@@ -32,9 +34,11 @@ interface RevenueData {
 }
 
 export function RevenueGraphs() {
+  const { data: session, status } = useSession();
   const [revenueData, setRevenueData] = useState<RevenueData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const gymId = "gym001"
 
   useEffect(() => {
     fetchRevenueData();
@@ -42,9 +46,10 @@ export function RevenueGraphs() {
 
   const fetchRevenueData = async () => {
     try {
-      const response = await fetch('/api/admin/financial-stats', {
+      const response = await fetch(`/api/gyms/${gymId}/admin/financial-stats`, {
         credentials: 'include',
       });
+      
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to fetch revenue data');
@@ -96,7 +101,7 @@ export function RevenueGraphs() {
       },
       title: {
         display: true,
-        text: 'Monthly Revenue Overview',
+        text: `Monthly Revenue Overview - Gym ${gymId}`,
       },
     },
     scales: {

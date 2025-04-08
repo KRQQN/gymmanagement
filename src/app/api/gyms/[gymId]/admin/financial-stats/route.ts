@@ -5,14 +5,14 @@ import { prisma } from "@/lib/prisma";
 import { getUserGymId } from "@/lib/utils";
 import { subMonths, addMonths, startOfMonth, endOfMonth } from 'date-fns';
 
-export async function GET() {
+export async function GET(req: Request, { params }: { params: { gymId: string } }) {
+  const { gymId } = params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user || session.user.role !== "ADMIN") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const gymId = await getUserGymId(session.user.id);
 
     if (!gymId) {
       return new NextResponse("Gym ID is required", { status: 400 });

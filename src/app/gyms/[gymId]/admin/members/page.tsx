@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -25,6 +25,7 @@ export default function AdminMembers() {
   const [isLoading, setIsLoading] = useState(true);
   const [members, setMembers] = useState<Member[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const gymId = useParams().gymId as string;
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -37,7 +38,7 @@ export default function AdminMembers() {
   useEffect(() => {
     async function fetchMembers() {
       try {
-        const response = await fetch("/api/admin/members");
+        const response = await fetch(`/api/gyms/${gymId}/admin/members`);
         if (!response.ok) {
           throw new Error("Failed to fetch members");
         }

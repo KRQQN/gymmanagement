@@ -4,7 +4,10 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getUserGymId } from "@/lib/utils";
 
-export async function GET({ params }: { params: { gymId: string } }) {
+export async function GET(
+  req: Request,
+  { params }: { params: { gymId: string } }
+) {
   const { gymId } = params;
 
   try {
@@ -13,10 +16,9 @@ export async function GET({ params }: { params: { gymId: string } }) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-
     const classes = await prisma.gymClass.findMany({
       where: {
-        gymId,
+        gymId: gymId,
       },
       include: {
         attendees: {
@@ -47,9 +49,9 @@ export async function POST(req: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const gymId = await getUserGymId(session.user.id);
 
-    const body = await req.json();
+    const body = await req.json()
+
     const {
       name,
       description,
@@ -61,6 +63,7 @@ export async function POST(req: Request) {
       equipment,
       requirements,
       instructor,
+      gymId,
     } = body;
 
     if (!name || !description || !schedule || !duration || !capacity) {
@@ -97,10 +100,8 @@ export async function PATCH(req: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const gymId = await getUserGymId(session.user.id);
-
     const body = await req.json();
-    const { classId, ...updateData } = body;
+    const { classId, gymId, ...updateData } = body;
 
     if (!classId) {
       return new NextResponse("Missing class ID", { status: 400 });
@@ -121,15 +122,14 @@ export async function PATCH(req: Request) {
   }
 }
 
-export async function DELETE(req: Request) {
+export async function DELETE(req: Request, { params }: { params: { gymId: string } }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user || session.user.role !== "ADMIN") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const gymId = await getUserGymId(session.user.id);
-
+    const { gymId } = params;
     const { searchParams } = new URL(req.url);
     const classId = searchParams.get("classId");
 

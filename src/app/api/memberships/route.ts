@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { stripe } from "@/lib/stripe";
 import { MembershipStatus } from "@prisma/client";
-w
+
 
 
 export async function GET(req: Request) {

@@ -4,14 +4,17 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getUserGymId } from "@/lib/utils";
 
-export async function GET() {
+export async function GET(req: Request, { params }: { params: { gymId: string } }) {
+  const { gymId } = params;
   try {
     const session = await getServerSession(authOptions);
+
+    console.log("#### API #### \nsession", session)
+
+
     if (!session?.user || session.user.role !== "ADMIN") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-
-    const gymId = await getUserGymId(session.user.id);
 
     // Get total members
     const totalMembers = await prisma.user.count({
