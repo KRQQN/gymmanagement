@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Icons } from "@/components/icons";
 
 interface Plan {
+  gymId: string;
   id: string;
   name: string;
   description: string;
@@ -32,7 +33,7 @@ export default function CheckoutPage() {
 
     async function fetchPlan() {
       try {
-        const response = await fetch(`/api/memberships/plans/${planId}`);
+        const response = await fetch(`/api/gyms/${plan?.gymId}/plans/${planId}`);
         if (!response.ok) {
           throw new Error("Failed to fetch plan");
         }

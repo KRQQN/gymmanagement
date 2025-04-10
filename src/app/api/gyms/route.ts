@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
+import { headers } from "next/headers";
 
 export async function POST(req: Request) {
   try {
@@ -70,9 +71,20 @@ export async function GET(req: Request) {
       where: {
         isActive: true,
       },
+      include: {
+        _count: {
+          select: {
+            classes: true,
+            users: true
+          }
+        }
+      }
     });
 
-    return NextResponse.json(gyms);
+    return NextResponse.json(gyms, {
+      status: 200,
+      headers: { "Cache-Control": "public, max-age=3600" },
+    });
   } catch (error) {
     console.error("Error fetching gyms:", error);
     return NextResponse.json(

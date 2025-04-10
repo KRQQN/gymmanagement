@@ -8,12 +8,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Icons } from "@/components/icons";
 
 interface MembershipSignUpProps {
+  gymId: string;
   planId: string;
   planName: string;
   planPrice: number;
 }
 
-export function MembershipSignUp({ planId, planName, planPrice }: MembershipSignUpProps) {
+export function MembershipSignUp({ gymId, planId, planName, planPrice }: MembershipSignUpProps) {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { toast } = useToast();
@@ -25,7 +26,7 @@ export function MembershipSignUp({ planId, planName, planPrice }: MembershipSign
     
     if (status === "authenticated") {
       console.log("User authenticated, redirecting to checkout...");
-      const checkoutUrl = `/memberships/checkout?planId=${planId}`;
+      const checkoutUrl = `/gyms/${gymId}/memberships/checkout?planId=${planId}`;
       console.log("Redirect URL:", checkoutUrl);
       router.push(checkoutUrl);
     }
@@ -36,7 +37,7 @@ export function MembershipSignUp({ planId, planName, planPrice }: MembershipSign
     try {
       const result = await signIn(provider, {
         redirect: false,
-        callbackUrl: `/memberships/checkout?planId=${planId}`,
+        callbackUrl: `/gyms/${gymId}/memberships/checkout?planId=${planId}`,
       });
       
       if (result?.error) {
@@ -70,7 +71,7 @@ export function MembershipSignUp({ planId, planName, planPrice }: MembershipSign
         email,
         password,
         redirect: false,
-        callbackUrl: `/memberships/checkout?planId=${planId}`,
+        callbackUrl: `/gyms/${gymId}/memberships/checkout?planId=${planId}`,
       });
       
       if (result?.error) {

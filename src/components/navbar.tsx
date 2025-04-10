@@ -11,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { UserCircle } from "lucide-react";
 import Image from "next/image";
 
 export function Navbar() {
@@ -24,12 +23,12 @@ export function Navbar() {
           &lt;your gym&gt;
         </Link>
         <div className="ml-auto flex items-center space-x-4">
-          <Link href="/gyms?type=classes">
+          <Link href={`/gyms/${session?.user.gymId}/classes`}>
             <Button variant="ghost" className="text-gray-200 hover:text-white hover:bg-secondary">
               Classes
             </Button>
           </Link>
-          <Link href="/gyms?type=memberships">
+          <Link href={`/gyms/${session?.user.gymId}/memberships`}>
             <Button variant="ghost" className="text-gray-200 hover:text-white hover:bg-secondary">
               Memberships
             </Button>

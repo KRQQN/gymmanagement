@@ -6,6 +6,7 @@ import { use, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ClassService, type Class } from "@/lib/services/class.service";
+import ShowMoreGyms from "@/components/member/ShowMoreGyms";
 
 export default function ClassesPage({ params }: { params: Promise<{ gymId: string }> }) {
   const { gymId } = use(params);
@@ -71,9 +72,9 @@ export default function ClassesPage({ params }: { params: Promise<{ gymId: strin
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold">Gym Classes</h1>
+        <h1 className="text-3xl font-bold">Available Gym Classes</h1>
         <p className="mt-2 text-muted-foreground">
-          Join our diverse range of fitness classes led by expert instructors
+          Choose from our diverse range of fitness classes led by expert instructors
         </p>
       </div>
 
@@ -153,6 +154,7 @@ export default function ClassesPage({ params }: { params: Promise<{ gymId: strin
           </div>
         ))}
       </div>
+      <ShowMoreGyms gymId={gymId || ''}/>
     </div>
   );
 } 

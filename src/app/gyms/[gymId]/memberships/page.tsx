@@ -1,12 +1,12 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { use, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { MembershipSignUp } from "@/components/membership/MembershipSignUp";
-import { use } from "react";
+import ShowMoreMemberships from "@/components/member/ShowMoreMemberships";
 
 interface Plan {
   id: string;
@@ -109,6 +109,7 @@ export default function MembershipPlans({ params }: { params: Promise<{ gymId: s
   if (selectedPlan && !session) {
     return (
       <MembershipSignUp
+      gymId={gymId}
         planId={selectedPlan.id}
         planName={selectedPlan.name}
         planPrice={selectedPlan.price}
@@ -117,15 +118,10 @@ export default function MembershipPlans({ params }: { params: Promise<{ gymId: s
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold">Membership Plans</h1>
-        <p className="mt-2 text-muted-foreground">
-          Choose the perfect membership plan for your fitness journey
-        </p>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Membership Plans</h1>
+      
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
         {plans.map((plan) => (
           <div
             key={plan.id}
@@ -176,6 +172,8 @@ export default function MembershipPlans({ params }: { params: Promise<{ gymId: s
           </div>
         ))}
       </div>
+
+      <ShowMoreMemberships gymId={gymId} />
     </div>
   );
 } 
