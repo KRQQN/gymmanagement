@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ClassService, type Class } from "@/lib/services/class.service";
 import ShowMoreGyms from "@/components/member/ShowMoreGyms";
+import ShowMoreClasses from "@/components/member/ShowMoreClasses";
 
 export default function ClassesPage({ params }: { params: Promise<{ gymId: string }> }) {
   const { gymId } = use(params);
@@ -154,7 +155,7 @@ export default function ClassesPage({ params }: { params: Promise<{ gymId: strin
           </div>
         ))}
       </div>
-      <ShowMoreGyms gymId={gymId || ''}/>
+      <ShowMoreClasses gymId={gymId} />
     </div>
   );
 } 

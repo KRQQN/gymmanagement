@@ -1,95 +1,36 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
-import { UserRole } from "@prisma/client";
-import { headers } from "next/headers";
+import { apiHandler } from "@/lib/api-handler";
+import { GymService } from "@/lib/services/gym.service";
+import { z } from "zod";
+import { ApiResponse } from "@/lib/api-response";
 
-export async function POST(req: Request) {
-  try {
-    const session = await getServerSession(authOptions);
+const createGymSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  address: z.string().min(1, "Address is required"),
+  phone: z.string().optional(),
+  email: z.string().email().optional(),
+});
 
-    if (!session) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    if (session.user.role !== UserRole.ADMIN) {
-      return NextResponse.json(
-        { error: "Only admins can create gyms" },
-        { status: 403 }
-      );
-    }
-
+export const POST = apiHandler(
+  async (req) => {
     const body = await req.json();
-    const { name, address, phone, email } = body;
-
-    if (!name || !address) {
-      return NextResponse.json(
-        { error: "Name and address are required" },
-        { status: 400 }
-      );
-    }
-
-    // Generate a random API key
-    const apiKey = `gym_${Math.random().toString(36).substring(2, 15)}`;
-
-    const gym = await prisma.gym.create({
-      data: {
-        name,
-        address,
-        phone,
-        email,
-        apiKey,
-      },
-    });
-
-    return NextResponse.json(gym, { status: 201 });
-  } catch (error) {
-    console.error("Error creating gym:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    const gym = await GymService.createGym(body);
+    return ApiResponse.success(gym, 201);
+  },
+  {
+    requireAuth: true,
+    requireAdmin: true,
+    validate: createGymSchema,
   }
-}
+);
 
-export async function GET(req: Request) {
-  try {
-    const session = await getServerSession(authOptions);
-
-    if (!session) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const gyms = await prisma.gym.findMany({
-      where: {
-        isActive: true,
-      },
-      include: {
-        _count: {
-          select: {
-            classes: true,
-            users: true
-          }
-        }
-      }
-    });
-
-    return NextResponse.json(gyms, {
-      status: 200,
+export const GET = apiHandler(
+  async () => {
+    const gyms = await GymService.getGyms();
+    return ApiResponse.success(gyms, 200, {
       headers: { "Cache-Control": "public, max-age=3600" },
     });
-  } catch (error) {
-    console.error("Error fetching gyms:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+  },
+  {
+    requireAuth: true,
   }
-}
+);

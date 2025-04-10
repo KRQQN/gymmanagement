@@ -6,14 +6,10 @@ import ShowMoreGyms from '@/components/member/ShowMoreGyms';
 import GymInfo from '@/components/gym/GymInfo';
 
 
-export default async function Gyms({
-  searchParams
-}: {
-  searchParams: { type: string };
-}) {
+export default async function Gyms() {
   const session = await getServerSession(authOptions);
   const gymId = session?.user.gymId;
-  const { type } = searchParams;
+
 
   const userMemberAt = await prisma.gym.findMany({
     where: {

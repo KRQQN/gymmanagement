@@ -2,13 +2,12 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getUserGymId } from "@/lib/utils";
 
 export async function GET(
   req: Request,
   { params }: { params: { gymId: string } }
 ) {
-  const { gymId } = params;
+  const { gymId } = await params;
 
   try {
     const session = await getServerSession(authOptions);
