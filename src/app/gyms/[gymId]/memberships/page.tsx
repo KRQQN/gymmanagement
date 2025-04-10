@@ -129,7 +129,7 @@ export default function MembershipPlans({ params }: { params: Promise<{ gymId: s
         {plans.map((plan) => (
           <div
             key={plan.id}
-            className="rounded-lg border bg-card p-6"
+            className="rounded-lg border bg-card p-6 flex flex-col justify-between h-full"
           >
             <div className="space-y-4">
               <div>
@@ -165,14 +165,14 @@ export default function MembershipPlans({ params }: { params: Promise<{ gymId: s
                   </li>
                 ))}
               </ul>
-
-              <Button
-                className="w-full"
-                onClick={() => handleSelectPlan(plan)}
-              >
-                Select Plan
-              </Button>
             </div>
+
+            <Button
+              className="w-full mt-6"
+              onClick={() => handleSelectPlan(plan)}
+            >
+              Select Plan
+            </Button>
           </div>
         ))}
       </div>
