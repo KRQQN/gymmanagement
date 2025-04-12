@@ -23,12 +23,12 @@ export function Navbar() {
           &lt;your gym&gt;
         </Link>
         <div className="ml-auto flex items-center space-x-4">
-          <Link href={`/gyms/${session?.user.gymId}/classes`}>
+          <Link href={`/classes`}>
             <Button variant="ghost" className="text-gray-200 hover:text-white hover:bg-secondary">
               Classes
             </Button>
           </Link>
-          <Link href={`/gyms/${session?.user.gymId}/memberships`}>
+          <Link href={`/memberships`}>
             <Button variant="ghost" className="text-gray-200 hover:text-white hover:bg-secondary">
               Memberships
             </Button>

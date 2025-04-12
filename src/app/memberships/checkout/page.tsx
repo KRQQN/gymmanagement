@@ -33,7 +33,7 @@ export default function CheckoutPage() {
 
     async function fetchPlan() {
       try {
-        const response = await fetch(`/api/gyms/${plan?.gymId}/plans/${planId}`);
+        const response = await fetch(`/api/plans/${planId}`);
         if (!response.ok) {
           throw new Error("Failed to fetch plan");
         }

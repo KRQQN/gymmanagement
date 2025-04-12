@@ -24,13 +24,22 @@ export const POST = apiHandler(
 );
 
 export const GET = apiHandler(
-  async () => {
-    const gyms = await GymService.getGyms();
+  async (req, _ , context) => {
+    // Get query parameters
+    const { searchParams } = new URL(req.url);
+    const includeClasses = searchParams.get('includeClasses') === 'true';
+    const includeMembershipPlans = searchParams.get('includeMembershipPlans') === 'true';
+    const options = {
+      include: {
+        ...(includeClasses && { classes: true }),
+        ...(includeMembershipPlans && { membershipPlans: true })
+      }
+    };
+
+    const gyms = await GymService.getGyms(options);
+
     return ApiResponse.success(gyms, 200, {
       headers: { "Cache-Control": "public, max-age=3600" },
     });
-  },
-  {
-    requireAuth: true,
   }
 );

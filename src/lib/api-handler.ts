@@ -5,7 +5,8 @@ import { z } from "zod";
 
 type HandlerFunction = (
   req: NextRequest,
-  session: any
+  session: any,
+  context?: { params: Record<string, string> }
 ) => Promise<NextResponse>;
 
 interface ApiHandlerOptions {
@@ -18,7 +19,7 @@ export function apiHandler(
   handler: HandlerFunction,
   options: ApiHandlerOptions = {}
 ) {
-  return async (req: NextRequest) => {
+  return async (req: NextRequest, context?: { params: Record<string, string> }) => {
     try {
       // Authentication
       let session = null;
@@ -46,7 +47,7 @@ export function apiHandler(
       }
 
       // Execute handler
-      return await handler(req, session);
+      return await handler(req, session, context);
     } catch (error) {
       console.error("API Error:", error);
       return ApiResponse.error(

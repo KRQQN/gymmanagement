@@ -61,8 +61,8 @@ export async function POST(req: Request) {
         },
       ],
       mode: "subscription",
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/gyms/${plan.gym.id}/memberships/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/gyms/${plan.gym.id}/memberships`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/memberships/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/memberships`,
       metadata: {
         userId: session.user.id,
         planId: plan.id,

@@ -8,6 +8,13 @@ export class MembershipService {
     try {
       const membership = await prisma.membership.findUnique({
         where: { userId },
+        include: {
+          plan: {
+            include: {
+              gym: true
+            }
+          }
+        }
       });
 
       return ApiResponse.success(membership);

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { PrismaClient } from "@prisma/client";
+import type { Gym, PrismaClient } from "@prisma/client";
 
 export interface Class {
   id: string;
@@ -18,11 +18,13 @@ export interface Class {
   requirements: string[];
   attendees: string[];
   instructor: string;
+  gym: Gym;
 }
 
 export class ClassService {
-  static async getAllClasses(gymId: string): Promise<Class[]> {
-    const response = await fetch(`/api/gyms/${gymId}/classes`);
+  static async getAllClasses(): Promise<Class[]> {
+
+    const response = await fetch(`/api/classes`);
     if (response.status === 401) {
       throw new Error("Unauthorized");
     }
@@ -30,6 +32,10 @@ export class ClassService {
       throw new Error("Failed to fetch classes");
     }
     const data = await response.json();
+    /* data.forEach((element: any) => {
+      console.log(element.gym)
+    }); */
+    
     return data.map((cls: any) => ({
       ...cls,
       schedule: cls.schedule as { day: string; time: string }[],

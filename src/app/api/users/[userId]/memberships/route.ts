@@ -36,6 +36,13 @@ export async function GET() {
           gte: new Date(),
         },
       },
+      include: {
+        plan: {
+          include: {
+            gym: true
+          }
+        }
+      }
     });
 
     if (!membership) {
@@ -53,6 +60,13 @@ export async function GET() {
         endDate: membership.endDate,
         status: membership.status,
         price: membership.price,
+        plan: {
+          name: membership.plan.name,
+          gym: {
+            name: membership.plan.gym.name,
+            address: membership.plan.gym.address
+          }
+        }
       },
     });
   } catch (error) {

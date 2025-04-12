@@ -13,6 +13,13 @@ interface Membership {
   endDate: string;
   status: string;
   price: number;
+  plan: {
+    name: string;
+    gym: {
+      name: string;
+      address: string;
+    };
+  };
 }
 
 export default function Membership() {
@@ -30,12 +37,21 @@ export default function Membership() {
   useEffect(() => {
     async function fetchMembership() {
       try {
-        const response = await fetch(`/api/users/${session?.user?.id}/memberships`);
+        const response = await fetch(`/api/gyms?includeMemberships=true`);
         if (!response.ok) {
           throw new Error("Failed to fetch membership");
         }
         const data = await response.json();
-        setMembership(data.membership);
+        // Find the gym that has the user's membership
+        const userGym = data.find((gym: any) => 
+          gym.memberships?.some((m: any) => m.userId === session?.user?.id)
+        );
+        if (userGym) {
+          const userMembership = userGym.memberships.find((m: any) => m.userId === session?.user?.id);
+          setMembership(userMembership);
+        } else {
+          setMembership(null);
+        }
       } catch (error) {
         setMembership(null);
       } finally {
@@ -117,6 +133,15 @@ export default function Membership() {
                   <div>
                     <p className="text-sm text-muted-foreground">Price</p>
                     <p className="font-medium">${membership.price}/month</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Gym</p>
+                    <p className="font-medium">{membership.plan.gym.name}</p>
+                    <p className="text-sm text-muted-foreground">{membership.plan.gym.address}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Plan</p>
+                    <p className="font-medium">{membership.plan.name}</p>
                   </div>
                 </div>
               </div>

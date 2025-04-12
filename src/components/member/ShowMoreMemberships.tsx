@@ -17,13 +17,14 @@ interface GymWithPlans {
   plans: Plan[];
 }
 
-const fetchGyms = async (gymId: string) => {
+const fetchGyms = async (gymId?: string) => {
   const gymsResponse = await fetch(`/api/gyms`, { cache: "force-cache" });
   const gyms = await gymsResponse.json();
-  return gyms.filter((gym: any) => gym.id !== gymId);
+  if (gymId) return gyms.filter((gym: any) => gym.id !== gymId);
+  return gyms;
 };
 
-const ShowMoreMemberships = ({ gymId }: { gymId: string }) => {
+const RenderMemberships = ({ excludeGymId }: { excludeGymId: string }) => {
   const [gyms, setGyms] = useState<GymWithPlans[]>([]);
   const [showMore, setShowMore] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -32,7 +33,7 @@ const ShowMoreMemberships = ({ gymId }: { gymId: string }) => {
   useEffect(() => {
     if (showMore && gyms.length === 0) {
       setLoading(true);
-      fetchGyms(gymId)
+      fetchGyms(excludeGymId)
         .then(async (gymsData) => {
           const gymsWithPlans = await Promise.all(
             gymsData.map(async (gym: any) => {
@@ -69,7 +70,7 @@ const ShowMoreMemberships = ({ gymId }: { gymId: string }) => {
           setLoading(false);
         });
     }
-  }, [showMore, gymId, toast]);
+  }, [showMore, excludeGymId, toast]);
 
   return (
     <div className="mt-8">
@@ -161,4 +162,4 @@ const ShowMoreMemberships = ({ gymId }: { gymId: string }) => {
   );
 };
 
-export default ShowMoreMemberships; 
+export default RenderMemberships; 

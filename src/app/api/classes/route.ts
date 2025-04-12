@@ -5,21 +5,11 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   req: Request,
-  { params }: { params: { gymId: string } }
 ) {
-  const { gymId } = await params;
-
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
     const classes = await prisma.gymClass.findMany({
-      where: {
-        gymId: gymId,
-      },
       include: {
+        gym: true,
         attendees: {
           select: {
             id: true,
@@ -33,6 +23,7 @@ export async function GET(
         createdAt: "desc",
       },
     });
+    
 
     return NextResponse.json(classes);
   } catch (error) {
